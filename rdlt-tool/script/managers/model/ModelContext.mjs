@@ -3,10 +3,11 @@ import VisualModelManager from "./VisualModelManager.mjs";
 import DragAndDropManager from "../modelling/DNDManager.mjs";
 import DrawingViewManager from "../modelling/DrawingViewManager.mjs";
 import ModellingManager from "../modelling/ModellingManager.mjs";
-import UserEventsManager from "../modelling/UserEventsManager.mjs";
 import PalettePanelManager from "../panels/PalettePanelManager.mjs";
 import PropertiesPanelManager from "../panels/PropertiesPanelManager.mjs";
 import TransformManager from "../modelling/TransformManager.mjs";
+import MouseEventsManager from "../modelling/events/MouseEventsManager.mjs";
+import KeyEventsManager from "../modelling/events/KeyEventsManager.mjs";
 
 export default class ModelContext {
     /**
@@ -17,7 +18,8 @@ export default class ModelContext {
      *  modelling: ModellingManager, 
      *  drawing: DrawingViewManager,
      *  dragAndDrop: DragAndDropManager,
-     *  userEvents: UserEventsManager,
+     *  mouseEvents: MouseEventsManager,
+     *  keyEvents: KeyEventsManager,
      *  transform: TransformManager,
      *  panels: PanelManagersGroup
      * }}
@@ -40,7 +42,8 @@ export default class ModelContext {
             modelling: new ModellingManager(this), 
             drawing: new DrawingViewManager(this),
             dragAndDrop: new DragAndDropManager(this),
-            userEvents: new UserEventsManager(this),
+            mouseEvents: new MouseEventsManager(this),
+            keyEvents: new KeyEventsManager(this),
             panels: {
                 palette: new PalettePanelManager(this),
                 properties: new PropertiesPanelManager(this)

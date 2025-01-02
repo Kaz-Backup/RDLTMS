@@ -1,4 +1,4 @@
-export default class UserEventsManager {
+export default class ArcDrawingManager {
     /** @type { ModelContext } */
     context;
 
