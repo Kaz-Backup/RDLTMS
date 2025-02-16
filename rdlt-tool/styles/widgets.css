@@ -1,0 +1,101 @@
+h1 {
+    margin: 0;
+}
+
+button.action {
+    height: 36px;
+    width: 36px;
+    border-radius: 5px;
+    border: 2px solid #7B7B7B;
+    background-color: #FFFFFF;
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.06);
+
+    text-align: center;
+    font-size: 17px;
+}
+
+button.action:active {
+    transform: translate(0.7px, 0.7px);
+}
+
+button.action.active {
+    background-color: #7B7B7B;
+    color: #FFFFFF;
+}
+
+button.action:disabled {
+    color: initial;
+    opacity: 0.3;
+    box-shadow: none;
+    pointer-events: none;
+}
+
+
+.v-divider {
+    height: 95%;
+    width: 1.6px;
+    background-color: #C0C0C0;
+}
+
+h1 {
+    font-size: 19px;
+    font-weight: normal;
+}
+
+
+.tab-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    align-items: flex-end;
+    height: 32px;
+    padding: 0 8px;
+}
+
+.tab-button {
+    font-size: 12px;
+    border: 1.7px solid #838383;
+    padding: 5px 10px 6px 10px;
+    border-radius: 3px 3px 0 0;
+    border-bottom-width: 0;
+    transform: translateY(1.8px);
+    cursor: pointer;
+    user-select: none;
+}
+
+.tab-button.active {
+    background-color: #FFFFFF;
+}
+
+.panel {
+    padding: 24px;
+}
+
+
+.collapsible {
+    margin-bottom: 16px;
+}
+
+.collapsible > header {
+    border-bottom: 1.7px solid #838383;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 0 2px 2px 4px;
+}
+
+.collapsible > header::after {
+    content: '▲';
+    float: right;
+}
+
+.collapsible > main {
+    padding: 4px;
+}
+
+.collapsible.collapsed > header::after {
+    content: '▼'
+}
+
+.collapsible.collapsed > main {
+    display: none;
+}
