@@ -14,8 +14,14 @@ export default class ArcStyles {
     */
 
     /** @type {ConnectorStyle} */
-    connectorStart;
-
-    /** @type {ConnectorStyle} */
     connectorEnd;
+
+    constructor() {
+        this.outline = new OutlineStyle();
+        this.label = new TextStyle();
+        this.connectorEnd = {
+            type: "arrow-closed-filled",
+            thickness: 15
+        };
+    }
 }

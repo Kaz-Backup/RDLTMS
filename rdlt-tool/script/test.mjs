@@ -6,14 +6,20 @@ async function test() {
     console.log("Testing app...");
 
     const modellingManager = App.contexts[0].managers.modelling;
-    modellingManager.addComponent("boundary", 
-        { identifier: "x1", label: "Boundary 1" }
+    
+    const x1 = modellingManager.addComponent("boundary", 
+        { identifier: "x1", label: "Boundary 1" },
+        new ComponentGeometry({ position: { x: 100, y: 100 }})
     );
 
-    modellingManager.addComponent("controller", 
+    const x2 = modellingManager.addComponent("controller", 
         { identifier: "x2" }, 
-        new ComponentGeometry({ position: { x: 100, y: 100 }}) 
+        new ComponentGeometry({ position: { x: 300, y: 200 }}) 
     );
+
+    const a1_2 = modellingManager.addArc(x1.uid, x2.uid);
+
+
 };
 
-setTimeout(() => test(), 100);
+setTimeout(() => test(), 200);

@@ -36,6 +36,10 @@ export default class UserEventsManager {
     registerComponent(id, rootElement) {
         this.#mouseEventsManager.registerComponent(id, rootElement);
     }
+
+    registerArc(id, rootElement) {
+        // TODO
+    }
     
     /**
      * 

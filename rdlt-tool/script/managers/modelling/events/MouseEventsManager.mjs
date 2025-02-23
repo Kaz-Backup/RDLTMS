@@ -26,16 +26,23 @@ export default class MouseEventsManager {
     registerDrawingSVG(svgElement) {
         this.#drawingSVG = svgElement;
 
-        const events = [
-            [ "mousemove", "mouse-move" ],
-            [ "mousedown", "mouse-down" ],
-            [ "mouseup", "mouse-up" ],
-        ];
-
-        events.forEach(([ elementEvent, mouseEvent ]) => svgElement.addEventListener(elementEvent, (event) => {
+        const eventsHandler = (mouseEvent) => (event) => {
             const { x, y } = this.#getRelativeDrawingPosition(event.clientX, event.clientY);
             this.#parent.onDrawingViewMouseEvent(mouseEvent, x, y);
-        }));
+        };
+
+        const innerEvents = [
+            [ "mousedown", "mouse-down" ],
+        ];
+
+        innerEvents.forEach(([ elementEvent, mouseEvent ]) => svgElement.addEventListener(elementEvent, eventsHandler(mouseEvent)));
+        
+        const universalEvents = [
+            [ "mousemove", "mouse-move" ],
+            [ "mouseup", "mouse-up" ],
+        ];
+        
+        universalEvents.forEach(([ elementEvent, mouseEvent ]) => document.addEventListener(elementEvent, eventsHandler(mouseEvent)));
     }
 
     #getRelativeDrawingPosition(x, y) {
@@ -60,7 +67,7 @@ export default class MouseEventsManager {
         events.forEach(([ elementEvent, mouseEvent ]) => componentCircleElement.addEventListener(elementEvent, (event) => {
             const { x: drawingX, y: drawingY } = this.#getRelativeDrawingPosition(event.clientX, event.clientY);
             this.#parent.onComponentMouseEvent(mouseEvent, id, { drawingX, drawingY });
-            event.stopPropagation();
+            if(elementEvent === "mousedown") event.stopPropagation();
         }));
     }
 

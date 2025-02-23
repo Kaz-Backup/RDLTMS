@@ -101,9 +101,9 @@ h1 {
     display: none;
 }
 
-
-svg .component {
-    transition: transform 100ms;
+svg .highlight {
+    user-select: none;
+    pointer-events: none;
 }
 
 svg .component *:not(.component-circle) {

@@ -18,7 +18,8 @@ export default class SVGAssetsRepository {
             },
             selection: {
                 componentHover: "",
-                componentSelected: ""
+                componentSelected: "",
+                highlight: ""
             }
 
         };
@@ -40,6 +41,7 @@ export default class SVGAssetsRepository {
         // Load selection template SVGs
         SVGAssetsRepository.cache.selection.componentHover = await getRawSVGAsset(`${SELECTION_DIR}/component-hover.svg`);
         SVGAssetsRepository.cache.selection.componentSelected = await getRawSVGAsset(`${SELECTION_DIR}/component-selected.svg`);
+        SVGAssetsRepository.cache.selection.highlight = await getRawSVGAsset(`${SELECTION_DIR}/highlight.svg`);
     }
 
     /**
@@ -59,6 +61,11 @@ export default class SVGAssetsRepository {
 
     static loadComponentSelectedSVGElement() {
         const raw = SVGAssetsRepository.cache.selection.componentSelected;
+        return SVGAssetsRepository.loadSVGElement(raw);
+    }
+
+    static loadHighlightSVGElement() {
+        const raw = SVGAssetsRepository.cache.selection.highlight;
         return SVGAssetsRepository.loadSVGElement(raw);
     }
 

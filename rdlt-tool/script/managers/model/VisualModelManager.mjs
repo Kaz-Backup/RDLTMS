@@ -1,6 +1,9 @@
+import ArcGeometry from "../../entities/geometry/ArcGeometry.mjs";
 import ComponentGeometry from "../../entities/geometry/ComponentGeometry.mjs";
+import VisualArc from "../../entities/model/visual/VisualArc.mjs";
 import VisualComponent from "../../entities/model/visual/VisualComponent.mjs";
 import VisualRDLTModel from "../../entities/model/visual/VisualRDLTModel.mjs";
+import ArcStyles from "../../entities/styling/ArcStyles.mjs";
 import ComponentStyles from "../../entities/styling/ComponentStyles.mjs";
 
 export default class VisualModelManager {
@@ -41,6 +44,13 @@ export default class VisualModelManager {
     }
 
     /**
+     * @returns {VisualComponent[]}
+     */
+    getAllComponents() {
+        return this.#visualModel.getAllComponents();
+    }
+
+    /**
      * @param {number} id
      * @returns {VisualComponent | null} 
      */
@@ -69,5 +79,27 @@ export default class VisualModelManager {
      */
     removeComponent(component) {
         this.#visualModel.removeComponent(component);
+    }
+
+    /**
+     * @param {{ C, L }} props 
+     * @param {ArcGeometry} geometry 
+     * @param {ArcStyles} styles 
+     * @returns {VisualArc}
+     */
+    addArc(fromVertexUID, toVertexUID, props, geometry, styles) {
+        const { C, L } = props || {};
+        const visualArc = new VisualArc({
+            fromVertexUID,
+            toVertexUID,
+            C, L
+        });
+
+        this.#visualModel.addArc(visualArc);
+        return visualArc;
+    }
+
+    getArcsIncidentToComponent(componentUID) {
+        return this.#visualModel.getArcsIncidentToComponent(componentUID);
     }
 }

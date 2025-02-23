@@ -67,15 +67,14 @@ export default class TransformManager {
         const absOffsetY = offsetY/zoomFactor;
 
         const initialPositions = this.states.moveInitialPositions;
-        for(const id in initialPositions.components) {
+        for(let id in initialPositions.components) {
+            id = Number(id);
             const { x: ix, y: iy } = initialPositions.components[id];
             const nx = ix + absOffsetX;
             const ny = iy + absOffsetY;
 
             modellingManager.updateComponentPosition(id, nx, ny);
         }
-
-        console.log(`Moving at offset (${offsetX}, ${offsetY})`);
     }
 
     endMovement() {

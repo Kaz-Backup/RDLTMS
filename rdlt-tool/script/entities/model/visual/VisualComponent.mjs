@@ -2,7 +2,23 @@ import ComponentGeometry from "../../geometry/ComponentGeometry.mjs";
 import ComponentStyles from "../../styling/ComponentStyles.mjs";
 import ModelComponent from "../ModelComponent.mjs";
 
-export default class VisualComponent extends ModelComponent {
+export default class VisualComponent {
+    static ID_COUNTER = 1;
+
+    /** @type {number} */
+    uid;
+
+    /** @type {string} */
+    identifier;
+
+    /** 
+     * @typedef {"boundary" | "entity" | "controller"} ComponentType
+     * @type {ComponentType} */
+    type;
+
+    /** @type {boolean} */
+    isRBSCenter;
+
     /** @type {string} */
     label;
 
@@ -20,12 +36,13 @@ export default class VisualComponent extends ModelComponent {
      */
     constructor(options = {}) {
         const { uid, identifier, type, isRBSCenter, geometry, styles } = options || {};
-        super({ uid, identifier, type, isRBSCenter });
 
+        this.uid = uid || ModelComponent.ID_COUNTER++;
+        this.identifier = identifier || "";
+        this.type = type;
+        this.isRBSCenter = isRBSCenter || false;
         this.geometry = geometry || new ComponentGeometry();
         this.styles = styles || new ComponentStyles();
-
-
     }
 
     copy() {

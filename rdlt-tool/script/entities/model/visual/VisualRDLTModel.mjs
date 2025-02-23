@@ -44,6 +44,28 @@ export default class VisualRDLTModel {
     }
 
     /**
+     * @returns {VisualComponent[]}
+     */
+    getAllComponents() {
+        return Object.values(this.#components);
+    }
+
+    /**
+     * @param {number} componentUID 
+     * @returns {VisualArc[]}
+     */
+    getArcsIncidentToComponent(componentUID) {
+        const incidentArcs = [];
+        for(const arc of this.#arcs) {
+            if(arc.fromVertexUID === componentUID || arc.toVertexUID === componentUID) {
+                incidentArcs.push(arc);
+            }
+        }
+
+        return incidentArcs;
+    }
+
+    /**
      * @param {number} arcUID
      * @returns {VisualArc | null}
      */

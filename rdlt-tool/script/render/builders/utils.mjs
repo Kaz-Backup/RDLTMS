@@ -40,3 +40,7 @@ export function makeGroupSVG(children, props = {}) {
 
     return groupSVG;
 }
+
+export function radiansToDegrees(radians) {
+    return radians * (180 / Math.PI);
+}
