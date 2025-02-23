@@ -75,3 +75,8 @@ body > main > main > .drawing {
     background-color: #FFFFFF;
     flex: 1;
 }
+
+body > main > main > .drawing > svg {
+    height: 100%;
+    width: 100%;
+}

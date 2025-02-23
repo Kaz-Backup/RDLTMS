@@ -10,4 +10,20 @@ export default class ComponentStyles {
 
     /** @type {TextStyle} */
     outerLabel;
+
+    constructor() {
+        this.outline = new OutlineStyle();
+        this.innerLabel = new TextStyle();
+        this.outerLabel = new TextStyle();
+    }
+
+    copy() {
+        const copied = new ComponentStyles();
+
+        copied.outline = this.outline.copy();
+        copied.innerLabel = this.innerLabel.copy();
+        copied.outerLabel = this.outerLabel.copy();
+
+        return copied;
+    }
 }

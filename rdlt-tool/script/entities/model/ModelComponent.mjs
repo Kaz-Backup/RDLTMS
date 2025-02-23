@@ -17,12 +17,12 @@ export default class ModelComponent {
 
     /**
      * 
-     * @param {{ identifier: string, type: ComponentType, isRBSCenter: boolean }} options 
+     * @param {{ uid?: number, identifier: string, type: ComponentType, isRBSCenter: boolean }} options 
      */
     constructor(options = {}) {
-        const { identifier, type, isRBSCenter } = options || {};
+        const { uid, identifier, type, isRBSCenter } = options || {};
 
-        this.uid = ModelComponent.ID_COUNTER++;
+        this.uid = uid || ModelComponent.ID_COUNTER++;
         this.identifier = identifier || "";
         this.type = type;
         this.isRBSCenter = isRBSCenter || false;
@@ -35,6 +35,15 @@ export default class ModelComponent {
     static create(type) {
         return new ModelComponent({ 
             identifier: "", type, isRBSCenter: false
+        });
+    }
+
+    copy() {
+        return new ModelComponent({
+            uid: this.uid,
+            identifier: this.identifier,
+            type: this.type,
+            isRBSCenter: this.isRBSCenter
         });
     }
 }

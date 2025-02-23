@@ -20,5 +20,12 @@ export default class OutlineStyle {
         this.color = color || OutlineStyle.DEFAULTS.color;
     }
 
+    copy() {
+        return new OutlineStyle({
+            width: this.width,
+            color: this.color
+        });
+    }
+
     
 }

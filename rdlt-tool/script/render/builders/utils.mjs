@@ -26,15 +26,17 @@ export function makeSVGElement(tag, attributes = {}) {
 
 /**
  * @param {SVGElement[]} children 
- * @param {{ x, y }} props 
+ * @param {{ x, y, className }} props 
  * @returns {SVGGElement}
  */
 export function makeGroupSVG(children, props = {}) {
-    const { x = 0, y = 0 } = props;
+    const { x = 0, y = 0, className } = props;
 
     const ns = "http://www.w3.org/2000/svg";
     const groupSVG = makeSVGElement("g", { transform: `translate(${x}, ${y})` });
     groupSVG.append(...children);
+
+    if(className) groupSVG.classList.add(...className.split(" "));
 
     return groupSVG;
 }

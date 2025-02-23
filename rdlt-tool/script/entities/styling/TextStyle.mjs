@@ -31,4 +31,13 @@ export default class TextStyle {
         this.color = color || TextStyle.DEFAULTS.color;
         this.weight = weight || TextStyle.DEFAULTS.weight;
     }
+
+    copy() {
+        return new TextStyle({
+            fontFamily: this.fontFamily,
+            size: this.size,
+            color: this.color,
+            weight: this.weight
+        });
+    }
 }

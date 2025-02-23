@@ -3,6 +3,7 @@ h1 {
 }
 
 button.action {
+    cursor: pointer;
     height: 36px;
     width: 36px;
     border-radius: 5px;
@@ -97,5 +98,33 @@ h1 {
 }
 
 .collapsible.collapsed > main {
+    display: none;
+}
+
+
+svg .component {
+    transition: transform 100ms;
+}
+
+svg .component *:not(.component-circle) {
+    user-select: none;
+    pointer-events: none;
+}
+
+svg .component .component-circle {
+    user-select: none;
+    pointer-events: all;
+}
+
+svg .component-hover {
+    transition: opacity 100ms ease;
+    opacity: 0;
+}
+
+svg .component-circle:hover ~ .component-hover {
+    opacity: 1;
+}
+
+svg .component:not([data-selected]) .component-selected {
     display: none;
 }

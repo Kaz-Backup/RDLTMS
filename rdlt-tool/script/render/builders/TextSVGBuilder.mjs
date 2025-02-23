@@ -1,4 +1,6 @@
-class TextSVGBuilder {
+import { makeSVGElement } from "./utils.mjs";
+
+export default class TextSVGBuilder {
     /** @type {string} */
     #text;
     

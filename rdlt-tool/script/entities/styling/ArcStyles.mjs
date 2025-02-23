@@ -1,7 +1,7 @@
 import OutlineStyle from "./OutlineStyle.mjs";
 import TextStyle from "./TextStyle.mjs";
 
-export default class ComponentStyles {
+export default class ArcStyles {
     /** @type {OutlineStyle} */
     outline;
 

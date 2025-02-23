@@ -1,4 +1,5 @@
 import SVGAssetsRepository from "./SVGAssetsRepository.mjs";
+import TextSVGBuilder from "./TextSVGBuilder.mjs";
 import { makeGroupSVG, makeSVGElement } from "./utils.mjs";
 
 export default class ComponentSVGBuilder {
@@ -48,20 +49,29 @@ export default class ComponentSVGBuilder {
 
 
         this.#componentElement = SVGAssetsRepository.loadComponentSVGElement(this.#type);
+        this.#componentElement.querySelectorAll("path")[0].classList.add("component-circle");
 
-        const groupBounds = makeSVGElement("rect", { 
+        const groupBounds = makeSVGElement("rect", {
             x: 0, y: 0, 
             width: this.#boundWidth,
             height: this.#boundHeight,
-            fill: "transparent" 
+            fill: "transparent",
         });
 
+
+        const hoverElement = SVGAssetsRepository.loadComponentHoverSVGElement();
+        hoverElement.classList.add("component-hover")
+        this.#componentElement.appendChild(hoverElement);
+
+        const selectedElement = SVGAssetsRepository.loadComponentSelectedSVGElement();
+        selectedElement.classList.add("component-selected");
+        this.#componentElement.appendChild(selectedElement);
 
         this.#element = makeGroupSVG([
             groupBounds,
             this.#componentElement,
             this.#centerLabel.element
-        ]);
+        ], { className: "component" });
 
         
         this.setStrokeWidth(this.#stroke.width);
@@ -106,5 +116,10 @@ export default class ComponentSVGBuilder {
         }
 
         return this;
+    }
+
+    setIsSelected(isSelected) {
+        if(isSelected) this.#element.setAttribute("data-selected", "");
+        else this.#element.removeAttribute("data-selected");
     }
 }
