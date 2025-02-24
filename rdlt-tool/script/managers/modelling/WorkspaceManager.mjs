@@ -1,3 +1,5 @@
+import ModelContext from "../model/ModelContext.mjs";
+
 export default class WorkspaceManager {
     /** @type { ModelContext } */
     context;
@@ -21,16 +23,19 @@ export default class WorkspaceManager {
      * @typedef {Object} ViewDrawing
      * @property {HTMLDivElement} container
      * @property {SVGElement} svg
+     * 
+     * @typedef {{ [panelID: string]: HTMLDivElement }} PanelsView
      */
      
     /**
-     * @type {{ buttons: ViewButtons, drawing: ViewDrawing }}
+     * @type {{ buttons: ViewButtons, panels: PanelsView, drawing: ViewDrawing }}
      */
     #view = {
         buttons: {
             modes: {},
             actions: {}
         },
+        panels: {},
         drawing: {}
     };
 
@@ -49,7 +54,11 @@ export default class WorkspaceManager {
         
         // Initialize action buttons
         [...document.querySelectorAll('.action-buttons button')].forEach(
-            button => this.#view.buttons.actions[button.getAttribute("data-action")] = button);
+            button => {
+                const action = button.getAttribute("data-action");
+                this.#view.buttons.actions[action] = button;
+                button.addEventListener("click", () => this.#onActionClicked(action));
+        });
         
         // Initialize drawing area
         this.#view.drawing = {
@@ -57,10 +66,39 @@ export default class WorkspaceManager {
             svg: document.querySelector('.drawing > svg'),
         };
 
-        console.log(this.#view);
+        // Initialize panels
+        [...document.querySelectorAll(".panels")].forEach(
+            panel => {
+                const panelID = panel.getAttribute("data-panel-id");
+                this.#view.panels[panelID] = panel;
+        });
+
     }
 
+    /**
+     * @returns {SVGElement}
+     */
     getDrawingSVG() {
         return this.#view.drawing.svg;
+    }
+
+    /**
+     * @param {string} panelID 
+     * @returns {HTMLDivElement} 
+     */
+    getPanelRootElement(panelID) {
+        return this.#view.panels[panelID];
+    }
+
+    /**
+     * 
+     * @param {"undo" | "redo" | "save" | "add" | "upload" | "download" | "settings"} action 
+     */
+    #onActionClicked(action) {
+        switch(action) {
+            case "download":
+                this.context.managers.export.exportToRDLTFile();
+            break;
+        }
     }
 }

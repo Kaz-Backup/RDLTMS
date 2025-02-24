@@ -25,6 +25,8 @@ export default class ModellingManager {
      *      isMoving: boolean, 
      *      isHighlighting: boolean,
      *      isMultiSelecting: boolean,
+     *      isDragging: boolean,
+     *      isArcTracing: boolean
      *  },
      *  highlightStart: { x: number, y: number } | null,
      *  view: {
@@ -44,6 +46,8 @@ export default class ModellingManager {
             isMoving: false,
             isHighlighting: false,
             isMultiSelecting: false,
+            isDragging: false,
+            isArcTracing: false
         },
         highlightStart: null,
         view: {
@@ -61,7 +65,7 @@ export default class ModellingManager {
     }
 
     /**
-     * @param {"click" | "mouse-down" | "mouse-up"} event 
+     * @param {"click" | "mouse-down" | "mouse-up" | "mouse-enter" | "mouse-leave"} event 
      * @param {number} id
      * @param {{ drawingX: number, drawingY: number }} props
      */
@@ -90,8 +94,21 @@ export default class ModellingManager {
                         break;
                     
                     case "mouse-up":
-                        this.#endMovement();
-                        break;
+                        if(modellingEvents.isMoving) {
+                            this.#endMovement();
+                        }
+
+                    break;
+                    case "mouse-enter":
+                        if(modellingEvents.isArcTracing) {
+                            this.context.managers.arcTracing.enterTargetComponent(id);
+                        }
+                    break;
+                    case "mouse-leave":
+                        if(modellingEvents.isArcTracing) {
+                            this.context.managers.arcTracing.leaveTargetComponent(id);
+                        }
+                    break;
                 }
             break;
         }
@@ -125,6 +142,14 @@ export default class ModellingManager {
                             this.#highlightTo(x, y);
                         }
 
+                        if(modellingEvents.isDragging) {
+                            this.context.managers.dragAndDrop.moveTo(x, y);
+                        }
+
+                        if(modellingEvents.isArcTracing) {
+                            this.context.managers.arcTracing.moveTo(x, y);
+                        }
+
                         break;
                     case "mouse-up":
                         if(modellingEvents.isMoving) {
@@ -134,7 +159,29 @@ export default class ModellingManager {
                         if(modellingEvents.isHighlighting) {
                             this.#stopHighlighting(x, y);
                         }
+
+                        if(modellingEvents.isDragging) {
+                            this.#stopDragging(x, y);
+                        }
+
+                        if(modellingEvents.isArcTracing) {
+                            this.#endArcTracing();
+                        }
                 }
+            break;
+        }
+    }
+
+
+    /**
+     * @param {"mouse-down"} event 
+     * @param {number} componentUID
+     * @param {{ drawingX: number, drawingY: number }} props
+     */
+    onArcTracingHoverUserEvent(event, componentUID, props) {
+        switch(event) {
+            case "mouse-down":
+                this.#startArcTracing(componentUID);
             break;
         }
     }
@@ -276,4 +323,74 @@ export default class ModellingManager {
 
         return visualArc;
     }
+
+    startDragAndDrop(componentType) {
+        this.modellingStates.events.isDragging = true;
+        this.#showDraggingComponent(componentType, { x: -100, y: -100 });
+    }
+
+    /**
+     * @param {"boundary" | "entity" | "controller"} componentType 
+     * @param {{ x: number, y: number }} position 
+     */
+    #showDraggingComponent(componentType, position) {
+        this.context.managers.drawing.showDraggingComponent(componentType, position);
+    }
+
+    endDragAndDrop() {
+        this.modellingStates.events.isDragging = false;
+        this.context.managers.drawing.destroyDraggingComponent();
+    }
+
+    /**
+     * 
+     * @param {number} x 
+     * @param {number} y 
+     */
+    moveDraggingComponent(x, y) {
+        this.context.managers.drawing.moveDraggingComponent(x, y);
+    }
+
+
+
+    /**
+     * @param {number} x 
+     * @param {number} y 
+     */
+    #stopDragging(x, y) {
+        this.modellingStates.events.isDragging = false;
+        this.context.managers.dragAndDrop.drop(x, y);
+    }
+
+    #startArcTracing(componentUID) {
+        this.modellingStates.events.isArcTracing = true;
+        this.context.managers.arcTracing.startTracing(componentUID);
+    }
+
+    /**
+     * @param {number} fromVertexUID 
+     * @param {{ x: number, y: number }} toPoint 
+     */
+    traceArcToPoint(fromVertexUID, toPoint) {
+        const startVertex = this.#getComponentById(fromVertexUID);
+        this.context.managers.drawing.traceArcToPoint(startVertex.geometry, toPoint);
+    }
+
+    /**
+     * @param {number} fromVertexUID 
+     * @param {number} toVertexUID 
+     */
+    traceArcToVertex(fromVertexUID, toVertexUID) {
+        const startVertex = this.#getComponentById(fromVertexUID);
+        const endVertex = this.#getComponentById(toVertexUID);
+        this.context.managers.drawing.traceArcToVertex(startVertex.geometry, endVertex.geometry);
+    }
+
+    #endArcTracing() {
+        this.modellingStates.events.isArcTracing = false;
+        this.context.managers.arcTracing.endTracing();
+        this.context.managers.drawing.endTracing();
+    }
+
+
 }

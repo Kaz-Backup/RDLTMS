@@ -10,10 +10,14 @@ export default class ComponentSVGBuilder {
     #type;
 
     /** @type {number} */
-    #boundWidth;
+    boundWidth;
 
     /** @type {number} */
-    #boundHeight;
+    boundHeight;
+
+    /** @type {number} */
+    initialCircleSize;
+
 
     /** @type {TextSVGBuilder} */
     #centerLabel;
@@ -28,43 +32,65 @@ export default class ComponentSVGBuilder {
     /**
      * @param {ComponentType} type
      */
-    constructor(type) {
+    constructor(type, draggingOnly = false) {
         this.#type = type;
-        this.#boundWidth = 100;
-        this.#boundHeight = 100;
-
-        this.#centerLabel = new TextSVGBuilder("", {
-            align: "middle", vAlign: "central", 
-            x: this.#boundWidth/2,
-            y: this.#boundHeight/2,
-            fontSize: 20
-        });
-
+        this.boundWidth = 100;
+        this.boundHeight = 100;
+        this.initialCircleSize = 70;
 
         this.#componentElement = SVGAssetsRepository.loadComponentSVGElement(this.#type);
         this.#componentElement.querySelectorAll("path")[0].classList.add("component-circle");
 
         const groupBounds = makeSVGElement("rect", {
             x: 0, y: 0, 
-            width: this.#boundWidth,
-            height: this.#boundHeight,
+            width: this.boundWidth,
+            height: this.boundHeight,
             fill: "transparent",
         });
 
+        if(!draggingOnly) {
+            this.#centerLabel = new TextSVGBuilder("", {
+                align: "middle", vAlign: "central", 
+                x: this.boundWidth/2,
+                y: this.boundHeight/2,
+                fontSize: 20
+            });
 
-        const hoverElement = SVGAssetsRepository.loadComponentHoverSVGElement();
-        hoverElement.classList.add("component-hover")
-        this.#componentElement.appendChild(hoverElement);
+            const hoverElement = SVGAssetsRepository.loadComponentHoverSVGElement();
+            hoverElement.classList.add("component-hover");
+            this.#componentElement.appendChild(hoverElement);
 
-        const selectedElement = SVGAssetsRepository.loadComponentSelectedSVGElement();
-        selectedElement.classList.add("component-selected");
-        this.#componentElement.appendChild(selectedElement);
+            const selectedElement = SVGAssetsRepository.loadComponentSelectedSVGElement();
+            selectedElement.classList.add("component-selected");
+            this.#componentElement.appendChild(selectedElement);
 
-        this.#element = makeGroupSVG([
-            groupBounds,
-            this.#componentElement,
-            this.#centerLabel.element
-        ], { className: "component" });
+            const arcTracingHoverElement = SVGAssetsRepository.loadArcTracingHoverSVGElement();
+            const arcTracingHoverCircleElement = arcTracingHoverElement.querySelector("circle");
+            arcTracingHoverCircleElement.classList.add("arctracing-hover");
+            this.#componentElement.appendChild(arcTracingHoverCircleElement);
+
+            this.#element = makeGroupSVG([
+                groupBounds,
+                this.#componentElement,
+                this.#centerLabel.element
+            ], { className: "component" });
+        } else {
+            this.#element = makeGroupSVG([
+                groupBounds,
+                this.#componentElement,
+            ], { className: "component dragging" });
+        }
+
+        
+
+
+
+        
+
+
+        
+
+        
    
     }
 
@@ -89,13 +115,11 @@ export default class ComponentSVGBuilder {
     }
 
     setPosition(x, y) {
-        const circleOffsetX = 15;
-        const circleOffsetY = 15;
-        
-        const boundsX = x - circleOffsetX;
-        const boundsY = y - circleOffsetY;
 
-        this.#element.setAttribute("transform", `translate(${boundsX}, ${boundsY})`);
+        x -= this.boundWidth/2;
+        y -= this.boundHeight/2;
+
+        this.#element.setAttribute("transform", `translate(${x}, ${y})`);
 
         return this;
     }

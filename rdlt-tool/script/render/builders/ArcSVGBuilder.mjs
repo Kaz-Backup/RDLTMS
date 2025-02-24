@@ -9,58 +9,67 @@ export default class ArcSVGBuilder {
     #labelMaskElement;
     #connectorEndElement;
 
-    constructor() {
+    constructor(isTracing = false) {
         
-
-        this.#connectorEndElement = makeSVGElement("polygon", {
-            points: "",
-            fill: "black",
-            stroke: "none"
-        });
-
-        this.#labelElement = new TextSVGBuilder("", {
-            align: "middle", vAlign: "central", 
-            x: 0,
-            y: 0,
-            fontSize: 16
-        });
-
-        const arcCutoutID = `arc-${Date.now()}-${Math.floor(Math.random()*10000)}-cutout`
-        this.#labelMaskElement = makeSVGElement("rect", {
-            x: 0, y: 0, width: 100, height: 100, 
-            rx: 20, ry: 20
-        });
-
-        const labelMaskBoundsElement = makeSVGElement("defs", {}, [
-            makeSVGElement("mask", { id: arcCutoutID }, [
-                makeSVGElement("rect", {
-                    width: "100%", height: "100%", fill: "white"
-                }),
-                this.#labelMaskElement,
-            ])
-        ]);
+        const arcColor = !isTracing ? "black" : "#aaaaaa";
 
         this.#pathElement = makeSVGElement("path", {
             d: "",
-            stroke: "black",
+            stroke: arcColor,
             fill: "none"
         });
 
         this.#pathElement.classList.add("arc-path");
+
+        this.#connectorEndElement = makeSVGElement("polygon", {
+            points: "",
+            fill: arcColor,
+            stroke: "none"
+        });
 
         const arcElement = makeGroupSVG([
             this.#pathElement,
             this.#connectorEndElement
         ]);
 
-        arcElement.setAttribute("mask", `url(#${arcCutoutID})`);
 
-        this.#element = makeGroupSVG([
-            labelMaskBoundsElement,
-            arcElement,
-            this.#labelElement.element,
-        ]);
+        if(!isTracing) {
+            this.#labelElement = new TextSVGBuilder("", {
+                align: "middle", vAlign: "central", 
+                x: 0,
+                y: 0,
+                fontSize: 16
+            });
+    
+            const arcCutoutID = `arc-${Date.now()}-${Math.floor(Math.random()*10000)}-cutout`
+            this.#labelMaskElement = makeSVGElement("rect", {
+                x: 0, y: 0, width: 100, height: 100, 
+                rx: 20, ry: 20
+            });
+    
+            const labelMaskBoundsElement = makeSVGElement("defs", {}, [
+                makeSVGElement("mask", { id: arcCutoutID }, [
+                    makeSVGElement("rect", {
+                        width: "100%", height: "100%", fill: "white"
+                    }),
+                    this.#labelMaskElement,
+                ])
+            ]);
 
+            
+            arcElement.setAttribute("mask", `url(#${arcCutoutID})`);
+
+            this.#element = makeGroupSVG([
+                labelMaskBoundsElement,
+                arcElement,
+                this.#labelElement.element,
+            ]);
+
+        } else {
+            this.#element = makeGroupSVG([
+                arcElement,
+            ]);
+        }
     }
 
     get element() { return this.#element; }
@@ -150,6 +159,8 @@ export default class ArcSVGBuilder {
     }
 
     updateLabelPosition(points, baseSegmentIndex, footFracDistance, perpDistance, startRadius, endRadius) {
+        if(!this.#labelElement) return;
+
         // Change endpoints to points of contact
         points[0] = this.#getPointOfContact(points[0], startRadius, points[1]);
         points[points.length-1] = this.#getPointOfContact(

@@ -19,7 +19,8 @@ export default class SVGAssetsRepository {
             selection: {
                 componentHover: "",
                 componentSelected: "",
-                highlight: ""
+                highlight: "",
+                arcTracingHover: ""
             }
 
         };
@@ -42,6 +43,7 @@ export default class SVGAssetsRepository {
         SVGAssetsRepository.cache.selection.componentHover = await getRawSVGAsset(`${SELECTION_DIR}/component-hover.svg`);
         SVGAssetsRepository.cache.selection.componentSelected = await getRawSVGAsset(`${SELECTION_DIR}/component-selected.svg`);
         SVGAssetsRepository.cache.selection.highlight = await getRawSVGAsset(`${SELECTION_DIR}/highlight.svg`);
+        SVGAssetsRepository.cache.selection.arcTracingHover = await getRawSVGAsset(`${SELECTION_DIR}/arctracing-hover.svg`);
     }
 
     /**
@@ -66,6 +68,11 @@ export default class SVGAssetsRepository {
 
     static loadHighlightSVGElement() {
         const raw = SVGAssetsRepository.cache.selection.highlight;
+        return SVGAssetsRepository.loadSVGElement(raw);
+    }
+
+    static loadArcTracingHoverSVGElement() {
+        const raw = SVGAssetsRepository.cache.selection.arcTracingHover;
         return SVGAssetsRepository.loadSVGElement(raw);
     }
 

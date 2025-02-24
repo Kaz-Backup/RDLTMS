@@ -37,15 +37,28 @@
     <main>
         <aside class="left-panels">
             <section class="tab-buttons">
-                <div class="tab-button active">Pallette</div>
+                <div class="tab-button active">Palette</div>
                 <div class="tab-button">Components</div>
             </section>
             <main class="panel-tabs">
-                <div class="panel">
+                <div class="panel" data-panel-id="palette">
                     <div class="collapsible">
                         <header>Basic Components</header>
                         <main>
-                            Some content
+                            <section class="palette-group">
+                                <div class="palette-draggable-element" data-element="component" data-component-type="entity">
+                                    <img src="./assets/templates/components/entity.svg">
+                                    Entity
+                                </div>
+                                <div class="palette-draggable-element" data-element="component" data-component-type="boundary">
+                                    <img src="./assets/templates/components/boundary.svg">
+                                    Boundary
+                                </div>
+                                <div class="palette-draggable-element" data-element="component" data-component-type="controller">
+                                    <img src="./assets/templates/components/controller.svg">
+                                    Controller
+                                </div>
+                            </section>
                         </main>
                     </div>
                 </div>
@@ -68,5 +81,6 @@
             <main class="panel-tabs"></main>
         </aside>
     </main>
+    <div id="tmp"></div>
 </body>
 </html>

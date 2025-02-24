@@ -3,11 +3,13 @@ import VisualModelManager from "./VisualModelManager.mjs";
 import DragAndDropManager from "../modelling/DNDManager.mjs";
 import DrawingViewManager from "../modelling/DrawingViewManager.mjs";
 import ModellingManager from "../modelling/ModellingManager.mjs";
+import ArcTracingManager from "../modelling/ArcTracingManager.mjs";
 import PalettePanelManager from "../panels/PalettePanelManager.mjs";
 import PropertiesPanelManager from "../panels/PropertiesPanelManager.mjs";
 import TransformManager from "../modelling/TransformManager.mjs";
 import UserEventsManager from "../modelling/events/UserEventsManager.mjs";
 import WorkspaceManager from "../modelling/WorkspaceManager.mjs";
+import ExportManager from "../file/ExportManager.mjs";
 
 export default class ModelContext {
     /**
@@ -18,11 +20,13 @@ export default class ModelContext {
      *  visualModel: VisualModelManager,
      *  modelling: ModellingManager, 
      *  drawing: DrawingViewManager,
+     *  arcTracing: ArcTracingManager,
      *  dragAndDrop: DragAndDropManager,
      *  userEvents: UserEventsManager,
      *  transform: TransformManager,
+     *  workspace: WorkspaceManager,
+     *  export: ExportManager
      *  panels: PanelManagersGroup,
-     *  workspace: WorkspaceManager
      * }}
     */
     managers;
@@ -47,15 +51,17 @@ export default class ModelContext {
             modelling: new ModellingManager(this), 
             drawing: new DrawingViewManager(this, 
                 { drawingSVG: workspaceManager.getDrawingSVG() }),
+            arcTracing: new ArcTracingManager(this),
             dragAndDrop: new DragAndDropManager(this),
             userEvents: new UserEventsManager(this,
                 { drawingSVG: workspaceManager.getDrawingSVG() }),
             transform: new TransformManager(this),
             workspace: workspaceManager,
+            export: new ExportManager(this),
             panels: {
-                palette: new PalettePanelManager(this),
-                properties: new PropertiesPanelManager(this)
-            }
+                palette: new PalettePanelManager(this, workspaceManager.getPanelRootElement("palette")),
+                properties: new PropertiesPanelManager(this, workspaceManager.getPanelRootElement("properties"))
+            },
         };
     }
     

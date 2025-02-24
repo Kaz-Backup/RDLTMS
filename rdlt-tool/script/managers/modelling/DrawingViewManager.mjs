@@ -19,13 +19,19 @@ export default class DrawingViewManager {
      * @type {{
      *    components: { [id: string | number]: ComponentSVGBuilder },
      *    arcs: { [id: string]: ArcSVGBuilder },
-     *    highlight: HighlightSVGBuilder
+     *    highlight: HighlightSVGBuilder,
+     *    dragging: { component: ComponentSVGBuilder },
+     *    arcTracing: ArcSVGBuilder
      * }}
      */
     #builders = {
         components: {},
         arcs: {},
-        highlight: null
+        highlight: null,
+        dragging: {
+            component: null
+        },
+        arcTracing: null
     };
 
     /**
@@ -35,6 +41,13 @@ export default class DrawingViewManager {
     constructor(context, options = {}) {
         this.context = context;
         this.#drawingSVG = options.drawingSVG;
+
+        // Initialize reusable builders
+        this.#builders.arcTracing = new ArcSVGBuilder(true);
+        this.#setArcStyles(this.#builders.arcTracing, new ArcStyles());
+        this.#builders.arcTracing.element.classList.add("arc-tracing");
+        this.#builders.arcTracing.element.style.display = "none";
+        this.#drawingSVG.appendChild(this.#builders.arcTracing.element);
     }
 
     highlightOver(ix, iy, fx, fy) {
@@ -209,16 +222,10 @@ export default class DrawingViewManager {
      */
     #setArcGeometry(builder, geometry, connectorEndThickness, vertex1Geometry, vertex2Geometry) {
         const startRadius = vertex1Geometry.size/2;
-        const start = {
-            x: vertex1Geometry.position.x + startRadius,
-            y: vertex1Geometry.position.y + startRadius,
-        };
+        const start = vertex1Geometry.position;
         
         const endRadius = vertex2Geometry.size/2;
-        const end = {
-            x: vertex2Geometry.position.x + endRadius,
-            y: vertex2Geometry.position.y + endRadius,
-        };
+        const end = vertex2Geometry.position;
         
         const points = [ start, ...geometry.waypoints, end ];
         builder.setWaypoints(points, startRadius, endRadius + 10);
@@ -237,5 +244,69 @@ export default class DrawingViewManager {
     #setArcStyles(builder, styles) {
         builder.setStrokeWidth(styles.outline.width)
             .setConnectorEndThickness(styles.connectorEnd.thickness);
+    }
+
+    /**
+     * @param {"boundary" | "entity" | "controller"} componentType
+     * @param {{ x: number, y: number }} position
+     * @returns {SVGGElement}
+     */
+    showDraggingComponent(componentType, position) {
+        const componentBuilder = new ComponentSVGBuilder(componentType, true);
+        
+        const geometry = new ComponentGeometry({ position });
+        const styles = new ComponentStyles();
+        
+        this.#setComponentGeometry(componentBuilder, geometry);
+        this.#setComponentStyles(componentBuilder, styles);
+        this.#builders.dragging.component = componentBuilder;
+        this.#drawingSVG.appendChild(componentBuilder.element);
+
+        return componentBuilder.element;
+    }
+
+    moveDraggingComponent(x, y) {
+        const draggingComponentBuilder = this.#builders.dragging.component;
+        if(!draggingComponentBuilder) return;
+
+        draggingComponentBuilder.setPosition(x, y);
+    }
+
+    destroyDraggingComponent() {
+        const draggingComponentBuilder = this.#builders.dragging.component;
+        if(!draggingComponentBuilder) return;
+
+        this.#drawingSVG.removeChild(draggingComponentBuilder.element);
+        this.#builders.dragging.component = null;
+    }
+
+    /**
+     * 
+     * @param {ComponentGeometry} vertex1Geometry 
+     * @param {{ x: number, y: number }} targetPoint 
+     */
+    traceArcToPoint(vertex1Geometry, targetPoint) {
+        this.#builders.arcTracing.element.style.display = "initial";
+
+        const arcTracingBuilder = this.#builders.arcTracing;
+        this.#setArcGeometry(arcTracingBuilder, new ArcGeometry(), new ArcStyles().connectorEnd.thickness, 
+            vertex1Geometry, new ComponentGeometry({
+                position: targetPoint, size: 1
+            }));
+    }
+
+    /**
+     * @param {ComponentGeometry} vertex1Geometry 
+     * @param {ComponentGeometry} vertex2Geometry 
+     */
+    traceArcToVertex(vertex1Geometry, vertex2Geometry) {
+        this.#builders.arcTracing.element.style.display = "initial";
+
+        const arcTracingBuilder = this.#builders.arcTracing;
+        this.#setArcGeometry(arcTracingBuilder, new ArcGeometry(), new ArcStyles().connectorEnd.thickness, vertex1Geometry, vertex2Geometry);
+    }
+
+    endTracing() {
+        this.#builders.arcTracing.element.style.display = "none";
     }
 }

@@ -26,13 +26,22 @@ export default class VisualRDLTModel {
      * @param {{ components?: VisualComponent[], arcs?: VisualArc[] }} options 
      */
     constructor(options = {}) {
-        const { components, arcs } = options || {};
+        const { name, components, arcs } = options || {};
         
+        this.#name = name || "New RDLT Model";
         this.#components = components || {};
         this.#arcs = arcs || [];
 
         if(components) for(const component of components) this.addComponent(component);
         if(arcs) for(const arc of arcs) this.addArc(arc);
+    }
+
+    getName() {
+        return this.#name;
+    }
+
+    setName(newName) {
+        this.#name = newName;
     }
 
     /**
@@ -71,6 +80,13 @@ export default class VisualRDLTModel {
      */
     getArc(arcUID) {
         return this.#arcs.find(arc => arc.uid == arcUID) || null;
+    }
+
+    /**
+     * @return {VisualArc[]}
+     */
+    getAllArcs() {
+        return [...this.#arcs];
     }
 
     /**

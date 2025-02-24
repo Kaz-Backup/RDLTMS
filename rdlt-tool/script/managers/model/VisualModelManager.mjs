@@ -21,6 +21,10 @@ export default class VisualModelManager {
 
         this.#visualModel = new VisualRDLTModel();
     }
+    
+    getModelName() {
+        return this.#visualModel.getName();
+    }
 
     /**
      * 
@@ -97,6 +101,13 @@ export default class VisualModelManager {
 
         this.#visualModel.addArc(visualArc);
         return visualArc;
+    }
+
+    /**
+     * @returns {VisualArc[]}
+     */
+    getAllArcs() {
+        return this.#visualModel.getAllArcs();
     }
 
     getArcsIncidentToComponent(componentUID) {

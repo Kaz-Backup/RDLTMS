@@ -2,7 +2,7 @@ export default class ArcGeometry {
     static DEFAULTS = {
         pathType: "straight",
         isAutoDraw: false,
-        arcLabel: { baseSegmentIndex: 1, footFracDistance: 0.5, perpDistance: 0 }
+        arcLabel: { baseSegmentIndex: 0, footFracDistance: 0.5, perpDistance: 0 }
     };
 
     /** 
@@ -36,7 +36,7 @@ export default class ArcGeometry {
 
         this.pathType = pathType || ArcGeometry.DEFAULTS.pathType;
         this.isAutoDraw = isAutoDraw || ArcGeometry.DEFAULTS.isAutoDraw;
-        this.waypoints = waypoints || [{ x: 300, y: 100 }];
+        this.waypoints = waypoints || [];
         this.arcLabel = arcLabel || { ...ArcGeometry.DEFAULTS.arcLabel };
 
     }

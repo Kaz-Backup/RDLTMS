@@ -101,6 +101,38 @@ h1 {
     display: none;
 }
 
+.palette-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.palette-draggable-element {
+    cursor: pointer;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3px 0 7px 0;
+    flex-direction: column;
+    width: 65px;
+    height: 60px;
+    border: 1.7px solid #838383;
+    border-radius: 3px;
+    font-size: 11px;
+    user-select: none;
+}
+
+.palette-draggable-element:active {
+    transform: scale(0.99);
+}
+
+
+.palette-draggable-element img {
+    width: 45px;
+    -webkit-user-drag: none;
+}
+
 svg .highlight {
     user-select: none;
     pointer-events: none;
@@ -112,8 +144,13 @@ svg .component *:not(.component-circle) {
 }
 
 svg .component .component-circle {
-    user-select: none;
-    pointer-events: all;
+    user-select: none !important;
+    pointer-events: all !important;
+}
+
+svg .arctracing-hover {
+    pointer-events: stroke !important;
+    transition: opacity 100ms ease;
 }
 
 svg .component-hover {
@@ -127,4 +164,8 @@ svg .component-circle:hover ~ .component-hover {
 
 svg .component:not([data-selected]) .component-selected {
     display: none;
+}
+
+svg .arctracing-hover:not(:hover) {
+    opacity: 0;
 }

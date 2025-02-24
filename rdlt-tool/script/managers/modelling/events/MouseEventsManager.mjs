@@ -62,6 +62,8 @@ export default class MouseEventsManager {
             [ "click", "click" ],
             [ "mousedown", "mouse-down" ],
             [ "mouseup", "mouse-up" ],
+            [ "mouseenter", "mouse-enter" ],
+            [ "mouseleave", "mouse-leave" ],
         ];
 
         events.forEach(([ elementEvent, mouseEvent ]) => componentCircleElement.addEventListener(elementEvent, (event) => {
@@ -69,6 +71,19 @@ export default class MouseEventsManager {
             this.#parent.onComponentMouseEvent(mouseEvent, id, { drawingX, drawingY });
             if(elementEvent === "mousedown") event.stopPropagation();
         }));
+    }
+
+    /**
+     * @param {number} componentUID 
+     * @param {SVGCircleElement} rootElement 
+     */
+    registerArcTracingHover(componentUID, rootElement) {
+        rootElement.addEventListener("mousedown", (event) => {
+            console.log("touched");
+            const { x: drawingX, y: drawingY } = this.#getRelativeDrawingPosition(event.clientX, event.clientY);
+            this.#parent.onArcTracingHoverMouseEvent("mouse-down", componentUID, { drawingX, drawingY });
+            event.stopPropagation();
+        });
     }
 
     
