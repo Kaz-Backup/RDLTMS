@@ -93,6 +93,7 @@ export default class DrawingViewManager {
         const id = arc.uid;
         const arcBuilder = new ArcSVGBuilder();
 
+        this.#setArcProps(arcBuilder, arc);
         this.#setArcGeometry(arcBuilder, arc.geometry, arc.styles.connectorEnd.thickness, vertex1Geometry, vertex2Geometry);
         this.#setArcStyles(arcBuilder, arc.styles);
 
@@ -192,6 +193,13 @@ export default class DrawingViewManager {
     }
 
 
+    /**
+     * @param {ArcSVGBuilder} builder 
+     * @param {VisualArc} arc 
+     */
+    #setArcProps(builder, arc) {
+        builder.setLabelText(`${arc.C}:${arc.L}`);
+    }
     
     /**
      * @param {ArcSVGBuilder} builder 
@@ -215,6 +223,10 @@ export default class DrawingViewManager {
         const points = [ start, ...geometry.waypoints, end ];
         builder.setWaypoints(points, startRadius, endRadius + 10);
         builder.updateConnectorEndPosition(connectorEndThickness, end, endRadius, points[points.length-2]);
+        builder.updateLabelPosition(
+            points, geometry.arcLabel.baseSegmentIndex,
+            geometry.arcLabel.footFracDistance, geometry.arcLabel.perpDistance, 
+            startRadius, endRadius);
     }
 
     /**

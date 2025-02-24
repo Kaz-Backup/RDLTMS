@@ -1,12 +1,45 @@
-import { makeGroupSVG, makeSVGElement, radiansToDegrees } from "./utils.mjs";
+import TextSVGBuilder from "./TextSVGBuilder.mjs";
+import { getDistance, makeGroupSVG, makeSVGElement, radiansToDegrees } from "./utils.mjs";
 
 export default class ArcSVGBuilder {
 
     #element;
     #pathElement;
+    #labelElement;
+    #labelMaskElement;
     #connectorEndElement;
 
     constructor() {
+        
+
+        this.#connectorEndElement = makeSVGElement("polygon", {
+            points: "",
+            fill: "black",
+            stroke: "none"
+        });
+
+        this.#labelElement = new TextSVGBuilder("", {
+            align: "middle", vAlign: "central", 
+            x: 0,
+            y: 0,
+            fontSize: 16
+        });
+
+        const arcCutoutID = `arc-${Date.now()}-${Math.floor(Math.random()*10000)}-cutout`
+        this.#labelMaskElement = makeSVGElement("rect", {
+            x: 0, y: 0, width: 100, height: 100, 
+            rx: 20, ry: 20
+        });
+
+        const labelMaskBoundsElement = makeSVGElement("defs", {}, [
+            makeSVGElement("mask", { id: arcCutoutID }, [
+                makeSVGElement("rect", {
+                    width: "100%", height: "100%", fill: "white"
+                }),
+                this.#labelMaskElement,
+            ])
+        ]);
+
         this.#pathElement = makeSVGElement("path", {
             d: "",
             stroke: "black",
@@ -15,16 +48,19 @@ export default class ArcSVGBuilder {
 
         this.#pathElement.classList.add("arc-path");
 
-        this.#connectorEndElement = makeSVGElement("polygon", {
-            points: "",
-            fill: "black",
-            stroke: "none"
-        });
-
-        this.#element = makeGroupSVG([
+        const arcElement = makeGroupSVG([
             this.#pathElement,
             this.#connectorEndElement
         ]);
+
+        arcElement.setAttribute("mask", `url(#${arcCutoutID})`);
+
+        this.#element = makeGroupSVG([
+            labelMaskBoundsElement,
+            arcElement,
+            this.#labelElement.element,
+        ]);
+
     }
 
     get element() { return this.#element; }
@@ -86,6 +122,12 @@ export default class ArcSVGBuilder {
         return this;
     }
 
+    setLabelText(text) {
+        this.#labelElement.text = text;
+
+        return this;
+    }
+
     /**
      * 
      * @param {number} thickness 
@@ -105,6 +147,37 @@ export default class ArcSVGBuilder {
         this.#connectorEndElement.setAttribute("points", `${thickness/2},0 0,${thickness} ${thickness},${thickness}`);
 
         return this;
+    }
+
+    updateLabelPosition(points, baseSegmentIndex, footFracDistance, perpDistance, startRadius, endRadius) {
+        // Change endpoints to points of contact
+        points[0] = this.#getPointOfContact(points[0], startRadius, points[1]);
+        points[points.length-1] = this.#getPointOfContact(
+            points[points.length-1], endRadius, points[points.length-2]);
+
+        const baseSegmentStart = points[baseSegmentIndex];
+        const baseSegmentEnd = points[baseSegmentIndex+1];
+
+        const footX = baseSegmentStart.x + footFracDistance*(baseSegmentEnd.x - baseSegmentStart.x);
+        const footY = baseSegmentStart.y + footFracDistance*(baseSegmentEnd.y - baseSegmentStart.y);
+
+        const segmentSlope = (baseSegmentStart.y - baseSegmentEnd.y) / (baseSegmentStart.x - baseSegmentEnd.x);
+        const perpAngle = Math.atan(-1/segmentSlope) + (baseSegmentStart.y < baseSegmentEnd.y ? Math.PI : 0);
+        const labelX = footX + Math.cos(perpAngle)*perpDistance;
+        const labelY = footY + Math.sin(perpAngle)*perpDistance;
+
+        this.#labelElement.position = { x: labelX, y: labelY };
+
+        requestAnimationFrame(() => {
+            const { width, height } = this.#labelElement.element.getBBox();
+            const clipoutWidth = width + 10;
+            const clipoutHeight = height + 6;
+            const clipoutX = labelX - clipoutWidth/2;
+            const clipoutY = labelY - clipoutHeight/2;
+            this.#labelMaskElement.setAttribute("transform", `translate(${clipoutX}, ${clipoutY})`);
+            this.#labelMaskElement.setAttribute("height", clipoutHeight);
+            this.#labelMaskElement.setAttribute("width", clipoutWidth);
+        });
     }
 
 }

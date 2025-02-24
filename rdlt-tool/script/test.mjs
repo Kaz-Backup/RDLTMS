@@ -17,9 +17,9 @@ async function test() {
         new ComponentGeometry({ position: { x: 300, y: 200 }}) 
     );
 
-    const a1_2 = modellingManager.addArc(x1.uid, x2.uid);
+    const a1_2 = modellingManager.addArc(x1.uid, x2.uid, { C: 'a', L: 5 });
 
 
 };
 
-setTimeout(() => test(), 200);
+setTimeout(() => test(), 300);
