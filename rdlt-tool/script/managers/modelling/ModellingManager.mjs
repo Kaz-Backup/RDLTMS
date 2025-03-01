@@ -87,6 +87,7 @@ export default class ModellingManager {
                             if(!selected.components.includes(id)) {
                                 this.#clearSelection();
                                 this.#addComponentToSelection(id);
+                                this.#refreshSelected();
                             }
                         }
 
@@ -186,8 +187,42 @@ export default class ModellingManager {
         }
     }
 
+    /**
+     * @param {"click" | "mouse-down" | "mouse-up" | "mouse-enter" | "mouse-leave"} event 
+     * @param {number} id
+     * @param {{ drawingX: number, drawingY: number }} props
+     */
+    onArcUserEvent(event, id, props) {
+        const mode = this.modellingStates.mode;
+        const selected = this.modellingStates.selected;
+        const modellingEvents = this.modellingStates.events;
+
+        console.log(`Arc ${id} user event: ${event}`);
+
+        switch(mode) {
+            case "select":
+                switch(event) {
+                    case "mouse-down":
+                        if(modellingEvents.isMultiSelecting) {
+
+                        } else {
+                            if(!selected.arcs.includes(id)) {
+                                this.#clearSelection();
+                                this.#addArcToSelection(id);
+                                this.#refreshSelected();
+                            }
+                        }
+
+                        break;
+                    
+                }
+            break;
+        }
+    }
+
     #startMovement(drawingX, drawingY) {
         this.modellingStates.events.isMoving = true;
+        this.context.managers.workspace.setModellingEvent("ismoving", true);
         const moveStart = { x: drawingX, y: drawingY };
         const moveInitialPositions = { components: {}, arcs: {}, annotations: {} };
 
@@ -201,11 +236,13 @@ export default class ModellingManager {
 
     #endMovement() {
         this.modellingStates.events.isMoving = false;
+        this.context.managers.workspace.setModellingEvent("ismoving", false);
         this.context.managers.transform.endMovement();
     }
 
     #startHighlighting(x, y) {
         this.modellingStates.events.isHighlighting = true;
+        this.context.managers.workspace.setModellingEvent("ishighlighting", true);
         this.modellingStates.highlightStart = { x, y };
     }
 
@@ -236,6 +273,7 @@ export default class ModellingManager {
         const { x: sx, y: sy } = this.modellingStates.highlightStart;
 
         this.modellingStates.events.isHighlighting = false;
+        this.context.managers.workspace.setModellingEvent("ishighlighting", false);
         this.modellingStates.highlightStart = null;
         this.context.managers.drawing.hideHighlight();
 
@@ -252,7 +290,9 @@ export default class ModellingManager {
         // Select all elements that are within (completely inside) highlighted area
         const components = this.context.managers.visualModel.getAllComponents();
         for(const component of components) {
-            const { x: csx, y: csy } = component.geometry.position;
+            const { x, y } = component.geometry.position;
+            const csx = x - component.geometry.size / 2;
+            const csy = y - component.geometry.size / 2;
             const cex = csx + component.geometry.size;
             const cey = csy + component.geometry.size;
 
@@ -260,21 +300,46 @@ export default class ModellingManager {
                 csy >= startY && cey <= endY) this.#addComponentToSelection(component.uid);
             
         }
+
+        const arcs = this.context.managers.visualModel.getAllArcs();
+        for(const arc of arcs) {
+            const { 
+                start: { x: asx, y: asy }, 
+                end: { x: aex, y: aey } } = this.context.managers.drawing.getArcBounds(arc.uid);
+
+                if(asx >= startX && aex <= endX &&
+                    asy >= startY && aey <= endY) this.#addArcToSelection(arc.uid);
+        }
+
+        this.#refreshSelected();
     }
 
     #clearSelection() {
         const drawingViewManager = this.context.managers.drawing;
 
+        // Deselect all components
         this.modellingStates.selected.components.forEach(id => drawingViewManager.setIsComponentSelected(id, false));
         this.modellingStates.selected.components = [];
-
+        
+        // Deselect all arcs
+        this.modellingStates.selected.arcs.forEach(id => drawingViewManager.setIsArcSelected(id, false));
         this.modellingStates.selected.arcs = [];
+
         this.modellingStates.selected.annotations = [];
     }
 
     #addComponentToSelection(id) {
         this.context.managers.drawing.setIsComponentSelected(id, true);
         this.modellingStates.selected.components.push(id);
+    }
+    
+    #addArcToSelection(id) {
+        this.context.managers.drawing.setIsArcSelected(id, true);
+        this.modellingStates.selected.arcs.push(id);
+    }
+
+    #refreshSelected() {
+        this.context.managers.panels.properties.refreshSelected();
     }
 
     /**
@@ -326,6 +391,7 @@ export default class ModellingManager {
 
     startDragAndDrop(componentType) {
         this.modellingStates.events.isDragging = true;
+        this.context.managers.workspace.setModellingEvent("isdragging", true);
         this.#showDraggingComponent(componentType, { x: -100, y: -100 });
     }
 
@@ -339,6 +405,7 @@ export default class ModellingManager {
 
     endDragAndDrop() {
         this.modellingStates.events.isDragging = false;
+        this.context.managers.workspace.setModellingEvent("isdragging", false);
         this.context.managers.drawing.destroyDraggingComponent();
     }
 
@@ -359,11 +426,14 @@ export default class ModellingManager {
      */
     #stopDragging(x, y) {
         this.modellingStates.events.isDragging = false;
+        this.context.managers.workspace.setModellingEvent("isdragging", false);
         this.context.managers.dragAndDrop.drop(x, y);
     }
 
     #startArcTracing(componentUID) {
+        this.#clearSelection();
         this.modellingStates.events.isArcTracing = true;
+        this.context.managers.workspace.setModellingEvent("isarctracing", true);
         this.context.managers.arcTracing.startTracing(componentUID);
     }
 
@@ -388,6 +458,7 @@ export default class ModellingManager {
 
     #endArcTracing() {
         this.modellingStates.events.isArcTracing = false;
+        this.context.managers.workspace.setModellingEvent("isarctracing", false);
         this.context.managers.arcTracing.endTracing();
         this.context.managers.drawing.endTracing();
     }

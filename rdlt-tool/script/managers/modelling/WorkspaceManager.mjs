@@ -28,9 +28,10 @@ export default class WorkspaceManager {
      */
      
     /**
-     * @type {{ buttons: ViewButtons, panels: PanelsView, drawing: ViewDrawing }}
+     * @type {{ main: HTMLDivElement, buttons: ViewButtons, panels: PanelsView, drawing: ViewDrawing }}
      */
     #view = {
+        main: null,
         buttons: {
             modes: {},
             actions: {}
@@ -48,6 +49,7 @@ export default class WorkspaceManager {
     }
 
     #initializeView() {
+        this.#view.main = document.querySelector("body > main");
         // Initialize mode buttons
         [...document.querySelectorAll('.mode-buttons button')].forEach(
             button => this.#view.buttons.modes[button.getAttribute("data-mode")] = button);
@@ -67,7 +69,7 @@ export default class WorkspaceManager {
         };
 
         // Initialize panels
-        [...document.querySelectorAll(".panels")].forEach(
+        [...document.querySelectorAll(".panel")].forEach(
             panel => {
                 const panelID = panel.getAttribute("data-panel-id");
                 this.#view.panels[panelID] = panel;
@@ -100,5 +102,19 @@ export default class WorkspaceManager {
                 this.context.managers.export.exportToRDLTFile();
             break;
         }
+    }
+
+    setModellingEvent(event, isActive) {
+        const attr = `data-evt-${event}`;
+        if(isActive) {
+            this.#view.main.setAttribute(attr, "true");
+        } else {
+            this.#view.main.removeAttribute(attr);
+        }
+    }
+
+    refreshSelection() {
+        const selected = this.context.managers.modelling.modellingStates.selected;
+
     }
 }

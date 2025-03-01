@@ -7,6 +7,7 @@ import ComponentStyles from "../../entities/styling/ComponentStyles.mjs";
 import ArcSVGBuilder from "../../render/builders/ArcSVGBuilder.mjs";
 import ComponentSVGBuilder from "../../render/builders/ComponentSVGBuilder.mjs";
 import HighlightSVGBuilder from "../../render/builders/HighlightSVGBuilder.mjs";
+import { getDistance } from "../../render/builders/utils.mjs";
 
 export default class DrawingViewManager {
     /** @type { ModelContext } */
@@ -116,12 +117,24 @@ export default class DrawingViewManager {
         return arcBuilder.element;
     }
 
+    getArcBounds(id) {
+        const arcBuilder = this.#builders.arcs[id];
+        return arcBuilder.getBounds();
+    }
+
 
     setIsComponentSelected(id, isSelected) {
         const componentBuilder = this.#getComponentBuilder(id);
         if(!componentBuilder) return;
 
         componentBuilder.setIsSelected(isSelected);
+    }
+
+    setIsArcSelected(id, isSelected) {
+        const arcBuilder = this.#getArcBuilder(id);
+        if(!arcBuilder) return;
+
+        arcBuilder.setIsSelected(isSelected);
     }
 
     
@@ -228,8 +241,16 @@ export default class DrawingViewManager {
         const end = vertex2Geometry.position;
         
         const points = [ start, ...geometry.waypoints, end ];
-        builder.setWaypoints(points, startRadius, endRadius + 10);
-        builder.updateConnectorEndPosition(connectorEndThickness, end, endRadius, points[points.length-2]);
+        builder.setWaypoints(points, startRadius, endRadius);
+
+        // Set connector end invisible if last segment's length is less than connectorEndThickness
+        if(getDistance(points[points.length-2], end) >= connectorEndThickness*2) {
+            builder.setConnectorEndVisible(true);
+            builder.updateConnectorEndPosition(connectorEndThickness, end, endRadius, points[points.length-2]);
+        } else {
+            builder.setConnectorEndVisible(false);
+        }
+
         builder.updateLabelPosition(
             points, geometry.arcLabel.baseSegmentIndex,
             geometry.arcLabel.footFracDistance, geometry.arcLabel.perpDistance, 

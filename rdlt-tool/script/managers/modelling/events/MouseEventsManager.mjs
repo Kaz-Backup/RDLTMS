@@ -73,6 +73,7 @@ export default class MouseEventsManager {
         }));
     }
 
+
     /**
      * @param {number} componentUID 
      * @param {SVGCircleElement} rootElement 
@@ -84,6 +85,24 @@ export default class MouseEventsManager {
             this.#parent.onArcTracingHoverMouseEvent("mouse-down", componentUID, { drawingX, drawingY });
             event.stopPropagation();
         });
+    }
+
+    
+    /**
+     * @param {number} id
+     * @param {SVGGElement} rootElement
+     */
+    registerArc(id, rootElement) {
+        const events = [
+            [ "mousedown", "mouse-down" ]
+        ];
+
+        const arcTriggerElement = rootElement.querySelector(".arc-trigger");
+        events.forEach(([ elementEvent, mouseEvent ]) => arcTriggerElement.addEventListener(elementEvent, (event) => {
+            const { x: drawingX, y: drawingY } = this.#getRelativeDrawingPosition(event.clientX, event.clientY);
+            this.#parent.onArcMouseEvent(mouseEvent, id, { drawingX, drawingY });
+            if(elementEvent === "mousedown") event.stopPropagation();
+        }));
     }
 
     

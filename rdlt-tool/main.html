@@ -78,7 +78,109 @@
             <section class="tab-buttons">
                 <div class="tab-button active">Properties</div>
             </section>
-            <main class="panel-tabs"></main>
+            <main class="panel-tabs">
+                <div class="panel" data-panel-id="properties" data-view-none>
+                    <div data-viewonly="none">
+                        Select a component, arc, or annotation
+                    </div>
+                    <div data-viewonly="component">
+                        <header>
+                            <h2>Component</h2>
+                        </header>
+                        <div class="collapsible">
+                            <header>Attributes</header>
+                            <main>
+                                <select class="full-width input-group">
+                                    <option value="boundary">Boundary</option>
+                                    <option value="entity">Entity</option>
+                                    <option value="controller">Controller</option>
+                                </select>
+                                <section class="columns input-group">
+                                    <div>
+                                        <label>Short identifier</label>
+                                        <input placeholder="x1" class="full-width" />
+                                    </div>
+                                    <div>
+                                        <label>Label</label>
+                                        <input placeholder="Set a label" class="full-width" />
+                                    </div>
+                                </section>
+                                <section class="input-group checkbox-item">
+                                    <input type="checkbox"><label>This is the center of an RBS</label>
+                                </section>
+                            </main>
+                        </div>
+                        <div class="collapsible">
+                            <header>Geometry</header>
+                            <main>
+                                <section class="columns input-group">
+                                    <div>
+                                        <label>X</label>
+                                        <input placeholder="0" class="full-width" />
+                                    </div>
+                                    <div>
+                                        <label>Y</label>
+                                        <input placeholder="0" class="full-width" />
+                                    </div>
+                                </section>
+                            </main>
+                        </div>
+                        <div class="collapsible">
+                            <header>Styling</header>
+                            <main>
+                            </main>
+                        </div>
+                    </div>
+                    <div data-viewonly="arc">
+                        <header>
+                            <h2>Arc</h2>
+                        </header>
+                        <div class="collapsible">
+                            <header>Vertices</header>
+                            <main>
+                                x1 to x3
+                            </main>
+                        </div>
+                        <div class="collapsible">
+                            <header>Attributes</header>
+                            <main>
+                                <section class="columns input-group">
+                                    <div>
+                                        <label>C-attibute</label>
+                                        <input placeholder="ϵ" class="full-width" />
+                                    </div>
+                                    <div>
+                                        <label>L-attibute</label>
+                                        <input placeholder="1" class="full-width" />
+                                    </div>
+                                </section>
+                            </main>
+                        </div>
+                        <div class="collapsible">
+                            <header>Geometry</header>
+                            <main>
+                                <section class="columns input-group" style="align-items: flex-end;">
+                                    <div>
+                                        <label>Path Style</label>
+                                        <select class="full-width">
+                                            <option>Straight</option>
+                                            <option>Elbowed</option>
+                                        </select>
+                                    </div>
+                                    <div class="checkbox-item" style="margin-bottom: 8px; margin-left: 12px;">
+                                        <input type="checkbox"><label>Auto Draw</label>
+                                    </div>
+                                </section>
+                            </main>
+                        </div>
+                        <div class="collapsible">
+                            <header>Styling</header>
+                            <main>
+                            </main>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </aside>
     </main>
     <div id="tmp"></div>

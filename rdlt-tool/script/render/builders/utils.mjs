@@ -18,7 +18,11 @@ export function makeSVGElement(tag, attributes = {}, children=[]) {
     const ns = "http://www.w3.org/2000/svg";
     const element = document.createElementNS(ns, tag);
     for(const key in attributes) {
-        element.setAttribute(key, attributes[key]);
+        if(key === "className") {
+            element.classList.add(...attributes[key].split(" "));
+        } else {
+            element.setAttribute(key, attributes[key]);
+        }
     }
 
     element.append(...children);

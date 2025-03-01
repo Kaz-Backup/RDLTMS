@@ -96,7 +96,8 @@ export default class VisualModelManager {
         const visualArc = new VisualArc({
             fromVertexUID,
             toVertexUID,
-            C, L
+            C, L,
+            geometry, styles
         });
 
         this.#visualModel.addArc(visualArc);

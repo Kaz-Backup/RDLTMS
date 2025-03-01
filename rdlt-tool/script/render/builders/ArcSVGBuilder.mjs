@@ -1,16 +1,29 @@
 import TextSVGBuilder from "./TextSVGBuilder.mjs";
+import SVGAssetsRepository from "./SVGAssetsRepository.mjs";
 import { getDistance, makeGroupSVG, makeSVGElement, radiansToDegrees } from "./utils.mjs";
+
 
 export default class ArcSVGBuilder {
 
+    #isTracing;
     #element;
     #pathElement;
     #labelElement;
     #labelMaskElement;
     #connectorEndElement;
+    #hoverPathElement;
+    #triggerPathElement;
+    #selectedPathElement;
+    #waypointsElement;
+
+    #bounds = {
+        start: { x: 0, y: 0 },
+        end: { x: 0, y: 0 }
+    };
 
     constructor(isTracing = false) {
         
+        this.#isTracing = isTracing;
         const arcColor = !isTracing ? "black" : "#aaaaaa";
 
         this.#pathElement = makeSVGElement("path", {
@@ -56,19 +69,41 @@ export default class ArcSVGBuilder {
                 ])
             ]);
 
+            this.#triggerPathElement = makeSVGElement("path", {
+                d: "",
+                fill: "none",
+                stroke: "black",
+                "stroke-width": 16,
+                className: "arc-trigger"
+            });
+
+            const hoverSVG = SVGAssetsRepository.loadArcHoverSVGElement();
+            this.#hoverPathElement = hoverSVG.querySelector("path");
+            this.#hoverPathElement.classList.add("arc-hover");
+
+            const selectedSVG = SVGAssetsRepository.loadArcSelectedSVGElement();
+            this.#selectedPathElement = selectedSVG.querySelector("path");
+            this.#selectedPathElement.classList.add("arc-selected");
+
+            this.#waypointsElement = makeGroupSVG([], { className: "arc-waypoints" });
+
             
             arcElement.setAttribute("mask", `url(#${arcCutoutID})`);
 
             this.#element = makeGroupSVG([
                 labelMaskBoundsElement,
                 arcElement,
+                this.#triggerPathElement,
+                this.#hoverPathElement,
+                this.#selectedPathElement,
                 this.#labelElement.element,
-            ]);
+                this.#waypointsElement
+            ], { className: "arc" });
 
         } else {
             this.#element = makeGroupSVG([
                 arcElement,
-            ]);
+            ], { className: "arc" });
         }
     }
 
@@ -84,18 +119,57 @@ export default class ArcSVGBuilder {
         const poc1 = this.#getPointOfContact(
             points[0], startRadius, points[1]);
 
+        if(isNaN(poc1.x) || isNaN(poc1.y)) return;
+
         const poc2 = this.#getPointOfContact(
             points[points.length-1], endRadius, points[points.length-2]);
 
         // Draw line from poc1 to poc2 along points excluding vertex centers
-        const drawPoints = [ ...points.slice(1, -1), poc2 ];
+        const drawPoints = [ poc1, ...points.slice(1, -1), poc2 ];
         
         let d = `M ${poc1.x} ${poc1.y}`;
-        for(const { x, y } of drawPoints) {
+        for(let i = 1; i < drawPoints.length; i++) {
+            const { x, y } = drawPoints[i];
             d += ` L ${x} ${y}`;
         }
 
         this.#pathElement.setAttribute("d", d);
+
+        if(!this.#isTracing) {
+            this.#hoverPathElement.setAttribute("d", d);
+            this.#selectedPathElement.setAttribute("d", d);
+            this.#triggerPathElement.setAttribute("d", d);
+    
+            // Update waypoint points
+            this.#waypointsElement.innerHTML = "";
+            for(let i = 0; i < drawPoints.length; i++) {
+                const { x, y } = drawPoints[i];
+                const waypointElement = SVGAssetsRepository.loadArcSelectedSVGElement().querySelector("circle");
+                waypointElement.classList.add("arc-waypoint");
+                waypointElement.setAttribute("cx", x);
+                waypointElement.setAttribute("cy", y);
+                
+                if(i === 0 || i === drawPoints.length-1) {
+                    waypointElement.setAttribute("data-nomove", "");
+                }
+
+                this.#waypointsElement.appendChild(waypointElement);
+            }
+            
+            // Update bounds
+            const startX = Math.min(...drawPoints.map(p => p.x));
+            const startY = Math.min(...drawPoints.map(p => p.y));
+            const endX = Math.max(...drawPoints.map(p => p.x));
+            const endY = Math.max(...drawPoints.map(p => p.y));
+            this.#bounds = {
+                start: { x: startX, y: startY },
+                end: { x: endX, y: endY },
+            }
+        }
+    }
+
+    getBounds() {
+        return this.#bounds;
     }
 
     /**
@@ -145,7 +219,7 @@ export default class ArcSVGBuilder {
      * @param {number} normalAngle 
      */
     updateConnectorEndPosition(thickness, targetCenter, targetRadius, previousPoint) {
-        const poc = this.#getPointOfContact(targetCenter, targetRadius + thickness/2, previousPoint);
+        const poc = this.#getPointOfContact(targetCenter, targetRadius + thickness/2 - 1, previousPoint);
         const normalAngle = this.#getNormalAngle(previousPoint, targetCenter);
 
         const rotationDeg = radiansToDegrees(normalAngle) + 90;
@@ -156,6 +230,10 @@ export default class ArcSVGBuilder {
         this.#connectorEndElement.setAttribute("points", `${thickness/2},0 0,${thickness} ${thickness},${thickness}`);
 
         return this;
+    }
+
+    setConnectorEndVisible(isVisible) {
+        this.#connectorEndElement.style.display = isVisible ? "initial" : "none";
     }
 
     updateLabelPosition(points, baseSegmentIndex, footFracDistance, perpDistance, startRadius, endRadius) {
@@ -185,10 +263,18 @@ export default class ArcSVGBuilder {
             const clipoutHeight = height + 6;
             const clipoutX = labelX - clipoutWidth/2;
             const clipoutY = labelY - clipoutHeight/2;
+
+            if(isNaN(clipoutX) || isNaN(clipoutY)) return;
+
             this.#labelMaskElement.setAttribute("transform", `translate(${clipoutX}, ${clipoutY})`);
             this.#labelMaskElement.setAttribute("height", clipoutHeight);
             this.#labelMaskElement.setAttribute("width", clipoutWidth);
         });
+    }
+
+    setIsSelected(isSelected) {
+        if(isSelected) this.#element.setAttribute("data-selected", "");
+        else this.#element.removeAttribute("data-selected");
     }
 
 }

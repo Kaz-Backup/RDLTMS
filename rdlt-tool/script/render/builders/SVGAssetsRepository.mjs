@@ -19,6 +19,8 @@ export default class SVGAssetsRepository {
             selection: {
                 componentHover: "",
                 componentSelected: "",
+                arcHover: "",
+                arcSelected: "",
                 highlight: "",
                 arcTracingHover: ""
             }
@@ -42,6 +44,8 @@ export default class SVGAssetsRepository {
         // Load selection template SVGs
         SVGAssetsRepository.cache.selection.componentHover = await getRawSVGAsset(`${SELECTION_DIR}/component-hover.svg`);
         SVGAssetsRepository.cache.selection.componentSelected = await getRawSVGAsset(`${SELECTION_DIR}/component-selected.svg`);
+        SVGAssetsRepository.cache.selection.arcHover = await getRawSVGAsset(`${SELECTION_DIR}/arc-hover.svg`);
+        SVGAssetsRepository.cache.selection.arcSelected = await getRawSVGAsset(`${SELECTION_DIR}/arc-selected.svg`);
         SVGAssetsRepository.cache.selection.highlight = await getRawSVGAsset(`${SELECTION_DIR}/highlight.svg`);
         SVGAssetsRepository.cache.selection.arcTracingHover = await getRawSVGAsset(`${SELECTION_DIR}/arctracing-hover.svg`);
     }
@@ -60,9 +64,19 @@ export default class SVGAssetsRepository {
         const raw = SVGAssetsRepository.cache.selection.componentHover;
         return SVGAssetsRepository.loadSVGElement(raw);
     }
-
+    
     static loadComponentSelectedSVGElement() {
         const raw = SVGAssetsRepository.cache.selection.componentSelected;
+        return SVGAssetsRepository.loadSVGElement(raw);
+    }
+
+    static loadArcHoverSVGElement() {
+        const raw = SVGAssetsRepository.cache.selection.arcHover;
+        return SVGAssetsRepository.loadSVGElement(raw);
+    }
+
+    static loadArcSelectedSVGElement() {
+        const raw = SVGAssetsRepository.cache.selection.arcSelected;
         return SVGAssetsRepository.loadSVGElement(raw);
     }
 

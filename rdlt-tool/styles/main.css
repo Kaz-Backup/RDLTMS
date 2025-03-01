@@ -18,6 +18,8 @@ body > header {
     display: flex;
     padding: 10px 15px 10px 30px;
     border-bottom: 1.7px solid #838383;
+    flex-basis: content;
+    box-sizing: border-box;
 }
 
 header section {
@@ -46,21 +48,29 @@ body > main {
     width: 100%;
     background-color: #F8F8F8;
     display: flex;
+    box-sizing: border-box;
+    align-items: stretch;
+    min-height: 0;
 }
 
+
+
+
 body > main > aside {
-    width: 300px;
+    width: 320px;
     border-top: solid 1.7px #838383;
     margin-top: 32px;
 
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
 }
 
 body > main > aside > .panel-tabs {
     flex: 1;
     background-color: #FFFFFF;
     border-top: 1.7px solid #838383;
+    min-height: 0;
 }
 
 body > main > main {
@@ -80,8 +90,140 @@ body > main > main > .drawing {
 body > main > main > .drawing > svg {
     height: 100%;
     width: 100%;
+    display: block;
 }
 
 #tmp {
     display: none;
+}
+
+.panel {
+    padding: 24px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    height: 100%;
+}
+
+
+.panel[data-panel-id="properties"] *[data-viewonly] {
+    display: none;
+}
+
+.panel[data-panel-id="properties"][data-view-component] *[data-viewonly="component"],
+.panel[data-panel-id="properties"][data-view-arc] *[data-viewonly="arc"],
+.panel[data-panel-id="properties"][data-view-none] *[data-viewonly="none"] {
+    display: initial;
+}
+
+.panel[data-panel-id="properties"] *[data-viewonly] > header {
+    margin-bottom: 12px;
+}
+
+.palette-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.palette-draggable-element {
+    cursor: pointer;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3px 0 7px 0;
+    flex-direction: column;
+    width: 65px;
+    height: 60px;
+    border: 1.7px solid #838383;
+    border-radius: 3px;
+    font-size: 11px;
+    user-select: none;
+}
+
+.palette-draggable-element:active {
+    transform: scale(0.99);
+}
+
+
+.palette-draggable-element img {
+    width: 45px;
+    -webkit-user-drag: none;
+}
+
+svg .highlight {
+    user-select: none;
+    pointer-events: none;
+}
+
+svg .component *:not(.component-circle) {
+    user-select: none;
+    pointer-events: none;
+}
+
+svg .component .component-circle {
+    user-select: none !important;
+    pointer-events: all !important;
+}
+
+svg .arctracing-hover {
+    pointer-events: stroke !important;
+    transition: opacity 100ms ease;
+}
+
+body > main[data-evt-ishighlighting] svg .arctracing-hover,
+body > main[data-evt-ishighlighting] svg .component-hover,
+body > main[data-evt-isarctracing] svg .arctracing-hover {
+    display: none;
+    pointer-events: none;
+}
+
+
+svg .component-hover {
+    transition: opacity 100ms ease;
+    opacity: 0;
+}
+
+svg .component-circle:hover ~ .component-hover {
+    opacity: 1;
+}
+
+svg .component:not([data-selected]) .component-selected {
+    display: none;
+}
+
+svg .arctracing-hover:not(:hover) {
+    opacity: 0;
+}
+
+svg .arc-hover, svg .arc-selected {
+    pointer-events: none;
+}
+
+svg .arc-trigger {
+    opacity: 0;
+}
+
+svg .arc-hover  {
+    transition: opacity 100ms ease;
+    opacity: 0;
+}
+
+
+svg .arc-trigger:hover ~ .arc-hover {
+    opacity: 1 !important;
+}
+
+svg .arc:not([data-selected]) .arc-waypoints,
+svg .arc:not([data-selected]) .arc-selected {
+    display: none;
+}
+
+svg .arc-waypoint[data-nomove] {
+    stroke-opacity: 0.5;
+}
+
+svg .arc-waypoint:not([data-nomove]) {
+    cursor: pointer;
+    pointer-events: all !important;
 }

@@ -38,8 +38,13 @@ export default class UserEventsManager {
         this.#mouseEventsManager.registerArcTracingHover(id, rootElement.querySelector(".arctracing-hover"));
     }
 
+
+    /**
+     * @param {number} id 
+     * @param {SVGGElement} rootElement 
+     */
     registerArc(id, rootElement) {
-        // TODO
+        this.#mouseEventsManager.registerArc(id, rootElement);
     }
     
     /**
@@ -69,5 +74,14 @@ export default class UserEventsManager {
      */
     onArcTracingHoverMouseEvent(event, componentUID, props) {
         this.context.managers.modelling.onArcTracingHoverUserEvent(event, componentUID, props);
+    }
+
+    /**
+     * @param {"mouse-down"} event 
+     * @param {number} id 
+     * @param {{ drawingX: number, drawingY: number }} props
+     */
+    onArcMouseEvent(event, id, props) {
+        this.context.managers.modelling.onArcUserEvent(event, id, props);
     }
 }

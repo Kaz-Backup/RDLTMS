@@ -43,6 +43,73 @@ h1 {
     font-weight: normal;
 }
 
+h2 {
+    font-size: 18px;
+    margin: 0;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.columns {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+label {
+    font-size: 13px;
+    display: block;
+    margin-bottom: 2px;
+    margin-left: 2px;
+}
+
+.columns > * {
+    flex: 1;
+}
+
+.input-group {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.checkbox-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 12px 0;
+}
+
+.checkbox-item label {
+    margin-bottom: 0;
+    margin-left: 4px;
+}
+
+select {
+    box-sizing: border-box;
+    border: 2px solid #7B7B7B;
+    background-color: #FFFFFF;
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.06);
+    outline: none;
+    border-radius: 5px;
+    padding: 6px 8px 6px 4px;
+}
+
+input {
+    box-sizing: border-box;
+    border: 2px solid #7B7B7B;
+    background-color: #FCFCFC;
+    box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.06);
+    outline: none;
+    border-radius: 5px;
+    padding: 6px 8px 6px 8px;
+}
+
+input[type="checkbox"] {
+    transform: scale(1.5);
+}
+
 
 .tab-buttons {
     display: flex;
@@ -68,9 +135,7 @@ h1 {
     background-color: #FFFFFF;
 }
 
-.panel {
-    padding: 24px;
-}
+
 
 
 .collapsible {
@@ -99,73 +164,4 @@ h1 {
 
 .collapsible.collapsed > main {
     display: none;
-}
-
-.palette-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-
-.palette-draggable-element {
-    cursor: pointer;
-    background: none;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 3px 0 7px 0;
-    flex-direction: column;
-    width: 65px;
-    height: 60px;
-    border: 1.7px solid #838383;
-    border-radius: 3px;
-    font-size: 11px;
-    user-select: none;
-}
-
-.palette-draggable-element:active {
-    transform: scale(0.99);
-}
-
-
-.palette-draggable-element img {
-    width: 45px;
-    -webkit-user-drag: none;
-}
-
-svg .highlight {
-    user-select: none;
-    pointer-events: none;
-}
-
-svg .component *:not(.component-circle) {
-    user-select: none;
-    pointer-events: none;
-}
-
-svg .component .component-circle {
-    user-select: none !important;
-    pointer-events: all !important;
-}
-
-svg .arctracing-hover {
-    pointer-events: stroke !important;
-    transition: opacity 100ms ease;
-}
-
-svg .component-hover {
-    transition: opacity 100ms ease;
-    opacity: 0;
-}
-
-svg .component-circle:hover ~ .component-hover {
-    opacity: 1;
-}
-
-svg .component:not([data-selected]) .component-selected {
-    display: none;
-}
-
-svg .arctracing-hover:not(:hover) {
-    opacity: 0;
 }
