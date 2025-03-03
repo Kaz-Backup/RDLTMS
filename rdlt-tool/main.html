@@ -90,7 +90,7 @@
                         <div class="collapsible">
                             <header>Attributes</header>
                             <main>
-                                <select class="full-width input-group">
+                                <select class="full-width input-group" name="type">
                                     <option value="boundary">Boundary</option>
                                     <option value="entity">Entity</option>
                                     <option value="controller">Controller</option>
@@ -98,15 +98,15 @@
                                 <section class="columns input-group">
                                     <div>
                                         <label>Short identifier</label>
-                                        <input placeholder="x1" class="full-width" />
+                                        <input placeholder="x1" class="full-width" name="identifier" />
                                     </div>
                                     <div>
                                         <label>Label</label>
-                                        <input placeholder="Set a label" class="full-width" />
+                                        <input placeholder="Set a label" class="full-width" name="label" />
                                     </div>
                                 </section>
                                 <section class="input-group checkbox-item">
-                                    <input type="checkbox"><label>This is the center of an RBS</label>
+                                    <input type="checkbox" name="isRBSCenter"><label>This is the center of an RBS</label>
                                 </section>
                             </main>
                         </div>
@@ -116,11 +116,11 @@
                                 <section class="columns input-group">
                                     <div>
                                         <label>X</label>
-                                        <input placeholder="0" class="full-width" />
+                                        <input placeholder="0" class="full-width" name="x" type="number"/>
                                     </div>
                                     <div>
                                         <label>Y</label>
-                                        <input placeholder="0" class="full-width" />
+                                        <input placeholder="0" class="full-width" name="y" type="number" />
                                     </div>
                                 </section>
                             </main>
@@ -137,8 +137,34 @@
                         </header>
                         <div class="collapsible">
                             <header>Vertices</header>
-                            <main>
-                                x1 to x3
+                            <main class="arcvertices">
+                                <div class="arcvertices-from">
+                                    <div>
+                                        <div>
+                                            <div class="vertex-identifier">v1</div>
+                                            <div class="vertex-type">Entity</div>
+                                        </div>
+                                        <div>
+                                            <img src="./assets/templates/components/entity.svg" height="40" />
+                                        </div>
+                                    </div>
+                                    <button>Properties &nbsp;<i class="fa-solid fa-up-right-from-square"></i></button>
+                                </div>
+                                <div class="arcvertices-arrow-container">
+                                    <img src="./assets/images/arcvertices-arrow.svg" class="arcvertices-arrow" />
+                                </div>
+                                <div class="arcvertices-to">
+                                    <div> 
+                                        <div>
+                                            <img src="./assets/templates/components/boundary.svg" height="40" />
+                                        </div>
+                                        <div>
+                                            <div class="vertex-identifier">v2</div>
+                                            <div class="vertex-type">Boundary</div>
+                                        </div>
+                                    </div>
+                                    <button>Properties &nbsp;<i class="fa-solid fa-up-right-from-square"></i></button>
+                                </div>
                             </main>
                         </div>
                         <div class="collapsible">
@@ -147,11 +173,11 @@
                                 <section class="columns input-group">
                                     <div>
                                         <label>C-attibute</label>
-                                        <input placeholder="ϵ" class="full-width" />
+                                        <input placeholder="ϵ" class="full-width" name="C" />
                                     </div>
                                     <div>
                                         <label>L-attibute</label>
-                                        <input placeholder="1" class="full-width" />
+                                        <input placeholder="1" class="full-width" name="L" type="number" />
                                     </div>
                                 </section>
                             </main>
@@ -162,13 +188,13 @@
                                 <section class="columns input-group" style="align-items: flex-end;">
                                     <div>
                                         <label>Path Style</label>
-                                        <select class="full-width">
-                                            <option>Straight</option>
-                                            <option>Elbowed</option>
+                                        <select class="full-width" name="pathType">
+                                            <option value="straight">Straight</option>
+                                            <option value="elbowed">Elbowed</option>
                                         </select>
                                     </div>
                                     <div class="checkbox-item" style="margin-bottom: 8px; margin-left: 12px;">
-                                        <input type="checkbox"><label>Auto Draw</label>
+                                        <input type="checkbox" name="isAutoDraw"><label>Auto Draw</label>
                                     </div>
                                 </section>
                             </main>

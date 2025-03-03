@@ -119,6 +119,55 @@ body > main > main > .drawing > svg {
     margin-bottom: 12px;
 }
 
+.panel[data-panel-id="properties"] .arcvertices {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.panel[data-panel-id="properties"] .arcvertices-from > div,
+.panel[data-panel-id="properties"] .arcvertices-to > div {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.panel[data-panel-id="properties"] .arcvertices-from > div {
+    justify-content: flex-end;
+    padding-right: 16px;
+}
+
+.panel[data-panel-id="properties"] .arcvertices-from > div > div > div {
+    text-align: right;
+}
+
+
+.panel[data-panel-id="properties"] .arcvertices-arrow {
+    position: absolute;
+    top: 15px;
+    left: -15px;
+}
+
+.panel[data-panel-id="properties"] .arcvertices-arrow-container {
+    width: 0;
+    height: 0;
+    position: relative;
+}
+
+.panel[data-panel-id="properties"] .arcvertices-to > div {
+    justify-content: flex-start;
+    padding-left: 16px;
+}
+
+.panel[data-panel-id="properties"] .arcvertices .vertex-identifier {
+    font-size: 12px;
+}
+
+.panel[data-panel-id="properties"] .arcvertices .vertex-type {
+    font-size: 11px;
+    opacity: 0.5;
+}
+
 .palette-group {
     display: flex;
     flex-wrap: wrap;

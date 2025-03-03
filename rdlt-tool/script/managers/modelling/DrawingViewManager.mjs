@@ -179,6 +179,16 @@ export default class DrawingViewManager {
     }
 
     /**
+     * @param {VisualArc} arc 
+     */
+    updateArcProps(arc) {
+        const arcBuilder = this.#getArcBuilder(arc.uid);
+        if(!arcBuilder) return;
+
+        this.#setArcProps(arcBuilder, arc);
+    }
+
+    /**
      * @param {number} id
      * @param {ArcGeometry} geometry
      * @param {ComponentGeometry} vertex1Geometry
@@ -189,6 +199,19 @@ export default class DrawingViewManager {
         if(!arcBuilder) return;
 
         this.#setArcGeometry(arcBuilder, geometry, connectorEndThickness, vertex1Geometry, vertex2Geometry);
+    }
+    
+
+    /**
+     * @param {ComponentSVGBuilder} builder 
+     * @param {VisualComponent} component 
+     */
+    updateComponentType(id, component) {
+        const componentBuilder = this.#getComponentBuilder(id);
+        if(!componentBuilder) return;
+
+        componentBuilder.setType(component.type);
+        this.#setComponentStyles(componentBuilder, component.styles);
     }
 
 
@@ -224,7 +247,7 @@ export default class DrawingViewManager {
      * @param {VisualArc} arc 
      */
     #setArcProps(builder, arc) {
-        builder.setLabelText(`${arc.C}:${arc.L}`);
+        builder.setLabelText(`${arc.C || "ϵ"}:${arc.L}`);
     }
     
     /**

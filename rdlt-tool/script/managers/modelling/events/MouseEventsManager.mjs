@@ -80,7 +80,6 @@ export default class MouseEventsManager {
      */
     registerArcTracingHover(componentUID, rootElement) {
         rootElement.addEventListener("mousedown", (event) => {
-            console.log("touched");
             const { x: drawingX, y: drawingY } = this.#getRelativeDrawingPosition(event.clientX, event.clientY);
             this.#parent.onArcTracingHoverMouseEvent("mouse-down", componentUID, { drawingX, drawingY });
             event.stopPropagation();

@@ -32,13 +32,14 @@ export default class VisualComponent {
     styles;
 
     /**
-     * @param {{ uid?: number, identifier: string, type: ComponentType, isRBSCenter: boolean, geometry?: ComponentGeometry, styles?: ComponentStyles }} options 
+     * @param {{ uid?: number, identifier: string, label: string, type: ComponentType, isRBSCenter: boolean, geometry?: ComponentGeometry, styles?: ComponentStyles }} options 
      */
     constructor(options = {}) {
-        const { uid, identifier, type, isRBSCenter, geometry, styles } = options || {};
+        const { uid, identifier, label, type, isRBSCenter, geometry, styles } = options || {};
 
         this.uid = uid || ModelComponent.ID_COUNTER++;
         this.identifier = identifier || "";
+        this.label = label || "";
         this.type = type;
         this.isRBSCenter = isRBSCenter || false;
         this.geometry = geometry || new ComponentGeometry();

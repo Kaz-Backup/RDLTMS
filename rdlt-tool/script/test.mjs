@@ -3,7 +3,7 @@ import ArcGeometry from "./entities/geometry/ArcGeometry.mjs";
 import ComponentGeometry from "./entities/geometry/ComponentGeometry.mjs";
 import VisualComponent from "./entities/model/visual/VisualComponent.mjs";
 
-async function test() {
+export async function test() {
     console.log("Testing app...");
 
     const modellingManager = App.contexts[0].managers.modelling;
@@ -31,7 +31,5 @@ async function test() {
     console.log(a2_3);
     
 
-
+    modellingManager.test();
 };
-
-setTimeout(() => test(), 500);

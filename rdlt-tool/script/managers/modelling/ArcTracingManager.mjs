@@ -53,7 +53,8 @@ export default class ArcTracingManager {
     endTracing() {
         if(this.#states.hoveredTargetVertexUID) {
             this.context.managers.modelling.addArc(
-                this.#states.fromVertexUID, this.#states.hoveredTargetVertexUID)
+                this.#states.fromVertexUID, this.#states.hoveredTargetVertexUID,
+                null, null, null, true);
         }
 
         this.#states.isArcTracing = false;

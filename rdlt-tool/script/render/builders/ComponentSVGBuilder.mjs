@@ -28,6 +28,9 @@ export default class ComponentSVGBuilder {
     /** @type {SVGElement} */
     #componentElement;
 
+    /** @type {SVGElement} */
+    #componentShapeElement;
+
     
     /**
      * @param {ComponentType} type
@@ -38,8 +41,16 @@ export default class ComponentSVGBuilder {
         this.boundHeight = 100;
         this.initialCircleSize = 70;
 
-        this.#componentElement = SVGAssetsRepository.loadComponentSVGElement(this.#type);
-        this.#componentElement.querySelectorAll("path")[0].classList.add("component-circle");
+
+        this.#componentShapeElement = SVGAssetsRepository.loadComponentSVGElement(this.#type);
+        this.#componentElement = makeGroupSVG([
+            this.#componentShapeElement,
+            makeSVGElement("circle", {
+                cx: 50, cy: 50, r: 35, "fill": "black",
+                "fill-opacity": 0,
+                className: "component-circle"
+            })
+        ]);
 
         const groupBounds = makeSVGElement("rect", {
             x: 0, y: 0, 
@@ -82,15 +93,6 @@ export default class ComponentSVGBuilder {
         }
 
         
-
-
-
-        
-
-
-        
-
-        
    
     }
 
@@ -107,6 +109,15 @@ export default class ComponentSVGBuilder {
     }
 
     get element() { return this.#element; }
+
+    setType(type) {
+        if(type === this.#type) return;
+
+        this.#type = type;
+        const newComponentShapeElement = SVGAssetsRepository.loadComponentSVGElement(this.#type);
+        this.#componentShapeElement.parentElement.replaceChild(newComponentShapeElement, this.#componentShapeElement);
+        this.#componentShapeElement = newComponentShapeElement;
+    }
 
     setCenterLabelText(text) {
         this.#centerLabel.text = text;

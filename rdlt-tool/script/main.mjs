@@ -1,6 +1,6 @@
 import App from "./App.mjs";
 import SVGAssetsRepository from "./render/builders/SVGAssetsRepository.mjs";
-
+import { test } from "./test.mjs";
 
 async function start() {
     console.log("Starting app...");
@@ -10,6 +10,8 @@ async function start() {
     await SVGAssetsRepository.initialize();
     
     console.log("App is ready.");
+
+    test();
 }
 
 start();

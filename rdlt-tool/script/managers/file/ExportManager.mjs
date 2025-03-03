@@ -190,7 +190,7 @@ export default class ExportManager {
      */
     #serializeComponent(component) {
         const { uid, identifier, type, isRBSCenter } = component;
-        return `${uid} ${identifier} ${type[0]} ${isRBSCenter ? 1 : 0}`;
+        return `${uid} ${this.#serializeString(identifier)} ${type[0]} ${isRBSCenter ? 1 : 0}`;
     }
 
     /**

@@ -2,21 +2,30 @@ h1 {
     margin: 0;
 }
 
-button.action {
-    cursor: pointer;
-    height: 36px;
-    width: 36px;
-    border-radius: 5px;
+
+button {
+    box-sizing: border-box;
     border: 2px solid #7B7B7B;
     background-color: #FFFFFF;
     box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.06);
+    outline: none;
+    border-radius: 5px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+button.action {
+    padding: 0;
+    height: 36px;
+    width: 36px;
 
     text-align: center;
     font-size: 17px;
 }
 
-button.action:active {
-    transform: translate(0.7px, 0.7px);
+button:active {
+    transform: translate(0.6px, 0.6px);
 }
 
 button.action.active {
@@ -109,6 +118,8 @@ input {
 input[type="checkbox"] {
     transform: scale(1.5);
 }
+
+
 
 
 .tab-buttons {

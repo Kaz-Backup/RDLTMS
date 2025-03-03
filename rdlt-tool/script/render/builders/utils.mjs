@@ -17,6 +17,7 @@ export async function getRawSVGAsset(path) {
 export function makeSVGElement(tag, attributes = {}, children=[]) {
     const ns = "http://www.w3.org/2000/svg";
     const element = document.createElementNS(ns, tag);
+    if(tag==="svg") element.setAttribute("xmlns", ns);
     for(const key in attributes) {
         if(key === "className") {
             element.classList.add(...attributes[key].split(" "));
@@ -25,7 +26,9 @@ export function makeSVGElement(tag, attributes = {}, children=[]) {
         }
     }
 
-    element.append(...children);
+    for(const child of children) {
+        element.appendChild(child);
+    }
 
     return element;
 }

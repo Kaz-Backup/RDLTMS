@@ -60,8 +60,16 @@ export default class ModellingManager {
      * @param {number} id 
      * @returns {VisualComponent | null} 
      */
-    #getComponentById(id) {
+    getComponentById(id) {
         return this.context.managers.visualModel.getComponent(id);
+    }
+
+    /**
+     * @param {number} id 
+     * @returns {VisualArc | null} 
+     */
+    getArcById(id) {
+        return this.context.managers.visualModel.getArc(id);
     }
 
     /**
@@ -70,7 +78,7 @@ export default class ModellingManager {
      * @param {{ drawingX: number, drawingY: number }} props
      */
     onComponentUserEvent(event, id, props) {
-        const component = this.#getComponentById(id);
+        const component = this.getComponentById(id);
         if(!component) return;
 
         const mode = this.modellingStates.mode;
@@ -197,8 +205,6 @@ export default class ModellingManager {
         const selected = this.modellingStates.selected;
         const modellingEvents = this.modellingStates.events;
 
-        console.log(`Arc ${id} user event: ${event}`);
-
         switch(mode) {
             case "select":
                 switch(event) {
@@ -228,7 +234,7 @@ export default class ModellingManager {
 
         this.modellingStates.selected.components.forEach((componentId) => 
             moveInitialPositions.components[componentId] = 
-                { ...(this.#getComponentById(componentId)?.geometry?.position || { x: 0, y: 0 }) }
+                { ...(this.getComponentById(componentId)?.geometry?.position || { x: 0, y: 0 }) }
             );
         
         this.context.managers.transform.startMovement(moveStart, moveInitialPositions);
@@ -357,17 +363,36 @@ export default class ModellingManager {
         return visualComponent;
     }
 
+
+    /**
+     * @param {number} id 
+     * @param {{ type?, identifier?, label? }} props 
+     */
+    updateComponentProps(id, props) {
+        const component = this.context.managers.visualModel.updateComponentProps(id, props);
+        this.context.managers.drawing.updateComponentProps(component);
+
+        if('type' in props) this.context.managers.drawing.updateComponentType(id, component);
+    }
+
     updateComponentPosition(id, x, y) {
+        const originalGeometry = this.getComponentById(id).geometry;
+        if(x === null || x === undefined) x = originalGeometry.position.x;
+        if(y === null || y === undefined) y = originalGeometry.position.y;
+
         const geometry = this.context.managers.visualModel.updateComponentPosition(id, x, y);
         this.context.managers.drawing.updateComponentGeometry(id, geometry);
 
         // Update geometry of incident arcs
         const incidentArcs = this.context.managers.visualModel.getArcsIncidentToComponent(id);
         for(const arc of incidentArcs) {
-            const vertex1Geometry = this.#getComponentById(arc.fromVertexUID).geometry;
-            const vertex2Geometry = this.#getComponentById(arc.toVertexUID).geometry;
+            const vertex1Geometry = this.getComponentById(arc.fromVertexUID).geometry;
+            const vertex2Geometry = this.getComponentById(arc.toVertexUID).geometry;
             this.context.managers.drawing.updateArcGeometry(arc.uid, arc.geometry, arc.styles.connectorEnd.thickness, vertex1Geometry, vertex2Geometry);
         }
+
+        // Update properties panel values, if selected
+        this.context.managers.panels.properties.refreshOneComponentValues(this.getComponentById(id));
     }
 
     /**
@@ -377,16 +402,31 @@ export default class ModellingManager {
      * @param {ArcStyles} styles 
      * @returns {VisualArc}
      */
-    addArc(fromVertexUID, toVertexUID, props, geometry, styles) {
-        const component1 = this.#getComponentById(fromVertexUID);
-        const component2 = this.#getComponentById(toVertexUID);
+    addArc(fromVertexUID, toVertexUID, props, geometry, styles, thenSelect = false) {
+        const component1 = this.getComponentById(fromVertexUID);
+        const component2 = this.getComponentById(toVertexUID);
         if(!component1 || !component2) return;
 
         const visualArc = this.context.managers.visualModel.addArc(fromVertexUID, toVertexUID, props, geometry, styles);
         const arcElement = this.context.managers.drawing.addArc(visualArc, component1.geometry, component2.geometry);
         this.context.managers.userEvents.registerArc(visualArc.uid, arcElement);
 
+        if(thenSelect) {
+            this.#clearSelection();
+            this.#addArcToSelection(visualArc.uid);
+            this.#refreshSelected();
+        }
+
         return visualArc;
+    }
+
+    /**
+     * @param {number} id 
+     * @param {{ type?, identifier?, label? }} props 
+     */
+    updateArcProps(id, props) {
+        const component = this.context.managers.visualModel.updateArcProps(id, props);
+        this.context.managers.drawing.updateArcProps(component);
     }
 
     startDragAndDrop(componentType) {
@@ -442,7 +482,7 @@ export default class ModellingManager {
      * @param {{ x: number, y: number }} toPoint 
      */
     traceArcToPoint(fromVertexUID, toPoint) {
-        const startVertex = this.#getComponentById(fromVertexUID);
+        const startVertex = this.getComponentById(fromVertexUID);
         this.context.managers.drawing.traceArcToPoint(startVertex.geometry, toPoint);
     }
 
@@ -451,8 +491,8 @@ export default class ModellingManager {
      * @param {number} toVertexUID 
      */
     traceArcToVertex(fromVertexUID, toVertexUID) {
-        const startVertex = this.#getComponentById(fromVertexUID);
-        const endVertex = this.#getComponentById(toVertexUID);
+        const startVertex = this.getComponentById(fromVertexUID);
+        const endVertex = this.getComponentById(toVertexUID);
         this.context.managers.drawing.traceArcToVertex(startVertex.geometry, endVertex.geometry);
     }
 
@@ -463,5 +503,18 @@ export default class ModellingManager {
         this.context.managers.drawing.endTracing();
     }
 
+    selectSingleComponent(id) {
+        this.#clearSelection();
+        this.#addComponentToSelection(id);
+        this.#refreshSelected();
+    }
+
+
+
+    test() {
+        // this.#addComponentToSelection(2);
+        this.#addArcToSelection(1);
+        this.#refreshSelected();
+    }
 
 }

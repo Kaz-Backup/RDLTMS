@@ -53,6 +53,7 @@ export default class VisualModelManager {
     getAllComponents() {
         return this.#visualModel.getAllComponents();
     }
+    
 
     /**
      * @param {number} id
@@ -60,6 +61,22 @@ export default class VisualModelManager {
      */
     getComponent(id) {
         return this.#visualModel.getComponent(id) || null;
+    }
+
+    /**
+     * @param {number} id 
+     * @param {{ type?, identifier?, label?, isRBSCenter }} props 
+     * @returns {VisualComponent}
+     */
+    updateComponentProps(id, props) {
+        const component = this.getComponent(id);
+
+        if('type' in props) component.type = props.type;
+        if('label' in props) component.label = props.label;
+        if('identifier' in props) component.identifier = props.identifier;
+        if('isRBSCenter' in props) component.isRBSCenter = props.isRBSCenter;
+
+        return component;
     }
 
     /**
@@ -105,6 +122,14 @@ export default class VisualModelManager {
     }
 
     /**
+     * @param {number} id
+     * @returns {VisualArc | null} 
+     */
+    getArc(id) {
+        return this.#visualModel.getArc(id) || null;
+    }
+
+    /**
      * @returns {VisualArc[]}
      */
     getAllArcs() {
@@ -113,5 +138,19 @@ export default class VisualModelManager {
 
     getArcsIncidentToComponent(componentUID) {
         return this.#visualModel.getArcsIncidentToComponent(componentUID);
+    }
+
+    /**
+     * @param {number} id 
+     * @param {{ C, L }} props 
+     * @returns {VisualArc}
+     */
+    updateArcProps(id, props) {
+        const component = this.getArc(id);
+
+        if('C' in props) component.C = props.C;
+        if('L' in props) component.L = props.L;
+
+        return component;
     }
 }
