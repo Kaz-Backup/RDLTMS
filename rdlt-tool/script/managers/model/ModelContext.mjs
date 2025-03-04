@@ -9,7 +9,7 @@ import PropertiesPanelManager from "../panels/PropertiesPanelManager.mjs";
 import TransformManager from "../modelling/TransformManager.mjs";
 import UserEventsManager from "../modelling/events/UserEventsManager.mjs";
 import WorkspaceManager from "../modelling/WorkspaceManager.mjs";
-import ExportManager from "../file/ExportManager.mjs";
+import ExportManager from "../file/export/ExportManager.mjs";
 
 export default class ModelContext {
     /**

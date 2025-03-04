@@ -98,8 +98,11 @@ export default class WorkspaceManager {
      */
     #onActionClicked(action) {
         switch(action) {
-            case "download":
+            case "save":
                 this.context.managers.export.exportToRDLTFile();
+            break;
+            case "download":
+                this.context.managers.export.exportToPNGImage();
             break;
         }
     }

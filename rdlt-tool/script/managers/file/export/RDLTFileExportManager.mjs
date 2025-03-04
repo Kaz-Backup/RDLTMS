@@ -1,24 +1,19 @@
-import ArcGeometry from "../../entities/geometry/ArcGeometry.mjs";
-import ComponentGeometry from "../../entities/geometry/ComponentGeometry.mjs";
-import VisualArc from "../../entities/model/visual/VisualArc.mjs";
-import VisualComponent from "../../entities/model/visual/VisualComponent.mjs";
-import OutlineStyle from "../../entities/styling/OutlineStyle.mjs";
-import TextStyle from "../../entities/styling/TextStyle.mjs";
-import ModelContext from "../model/ModelContext.mjs";
+import ArcGeometry from "../../../entities/geometry/ArcGeometry.mjs";
+import ComponentGeometry from "../../../entities/geometry/ComponentGeometry.mjs";
+import VisualArc from "../../../entities/model/visual/VisualArc.mjs";
+import VisualComponent from "../../../entities/model/visual/VisualComponent.mjs";
+import OutlineStyle from "../../../entities/styling/OutlineStyle.mjs";
+import TextStyle from "../../../entities/styling/TextStyle.mjs";
+import ModelContext from "../../model/ModelContext.mjs";
+import VisualModelManager from "../../model/VisualModelManager.mjs";
+import { startBlobDownload } from "../utils.mjs";
 
-export default class ExportManager {
-    /** @type { ModelContext } */
-    context;
+export default class RDLTFileExportManager {
 
     /**
-     * @param {ModelContext} context 
+     * @param {VisualModelManager} visualModelManager
      */
-    constructor(context) {
-        this.context = context;
-    }
-
-    exportToRDLTFile() {
-        const visualModelManager = this.context.managers.visualModel;
+    static exportToRDLTFile(visualModelManager) {
         const components = visualModelManager.getAllComponents();
         const arcs = visualModelManager.getAllArcs();
 
@@ -75,7 +70,7 @@ export default class ExportManager {
          * @returns {number}
          */
         const getStyleClassFontID = (textStyle) => {
-            const serializedFont = this.#serializeFontStyleClass(textStyle);
+            const serializedFont = RDLTFileExportManager.serializeFontStyleClass(textStyle);
             if(!(serializedFont in serialized.styleClasses.fonts)) {
                 const fontID = styleClassesIDCounters.fonts++;
                 serialized.styleClasses.fonts[serializedFont] = fontID;
@@ -90,7 +85,7 @@ export default class ExportManager {
          * @returns {number}
          */
         const getStyleClassOutlineID = (outlineStyle) => {
-            const serializedOutline = this.#serializeOutlineStyleClass(outlineStyle);
+            const serializedOutline = RDLTFileExportManager.serializeOutlineStyleClass(outlineStyle);
             if(!(serializedOutline in serialized.styleClasses.outlines)) {
                 const outlineID = styleClassesIDCounters.outlines++;
                 serialized.styleClasses.outlines[serializedOutline] = outlineID;
@@ -102,15 +97,15 @@ export default class ExportManager {
 
         // Serialize vertices, their geometry, and styles
         for(const component of components) {
-            serialized.vertices.push(this.#serializeComponent(component));
-            serialized.geometry.vertices.push(this.#serializeComponentGeometry(component.uid, component.geometry));
+            serialized.vertices.push(RDLTFileExportManager.serializeComponent(component));
+            serialized.geometry.vertices.push(RDLTFileExportManager.serializeComponentGeometry(component.uid, component.geometry));
 
             // Serialize styles
             const centerLabelFontID = getStyleClassFontID(component.styles.innerLabel);
             const labelFontID = getStyleClassFontID(component.styles.outerLabel);
             const outlineID = getStyleClassOutlineID(component.styles.outline);
             
-            const serializedStyle = this.#serializeVertexStyle(centerLabelFontID, labelFontID, outlineID);
+            const serializedStyle = RDLTFileExportManager.serializeVertexStyle(centerLabelFontID, labelFontID, outlineID);
             if(!(serializedStyle in cumulativeCommonStyles.vertices)) {
                 cumulativeCommonStyles.vertices[serializedStyle] = [component.uid];
             } else {
@@ -120,14 +115,14 @@ export default class ExportManager {
 
         // Serialize arcs, their geometry, and styles
         for(const arc of arcs) {
-            serialized.arcs.push(this.#serializeArc(arc));
-            serialized.geometry.arcs.push(this.#serializeArcGeometry(arc.uid, arc.geometry));
+            serialized.arcs.push(RDLTFileExportManager.serializeArc(arc));
+            serialized.geometry.arcs.push(RDLTFileExportManager.serializeArcGeometry(arc.uid, arc.geometry));
 
             // Serialize styles
             const labelFontID = getStyleClassFontID(arc.styles.label);
             const outlineID = getStyleClassOutlineID(arc.styles.outline);
 
-            const serializedStyle = this.#serializeArcStyle(labelFontID, outlineID);
+            const serializedStyle = RDLTFileExportManager.serializeArcStyle(labelFontID, outlineID);
             if(!(serializedStyle in cumulativeCommonStyles.arcs)) {
                 cumulativeCommonStyles.arcs[serializedStyle] = [arc.uid];
             } else {
@@ -162,14 +157,14 @@ export default class ExportManager {
 
 
         const filename = `${visualModelManager.getModelName()}.txt`;
-        this.#startDownload(filename, raw);
+        startBlobDownload(filename, raw);
     }
 
     /**
      * @param {TextStyle} textStyle
      * @returns {string} - format: `<family> <size> <color> <weight?>`
      */ 
-    #serializeFontStyleClass(textStyle) {
+    static serializeFontStyleClass(textStyle) {
         const { fontFamily, size, color, weight } = textStyle;
         return `${fontFamily} ${size} ${color} ${weight !== "normal" ? weight : ""}`.trim();
     }
@@ -178,7 +173,7 @@ export default class ExportManager {
      * @param {OutlineStyle} outlineStyle
      * @returns {string} - format: `<width> <color> <style?>`
      */ 
-    #serializeOutlineStyleClass(outlineStyle) {
+    static serializeOutlineStyleClass(outlineStyle) {
         const { width, color } = outlineStyle;
 
         return `${width} ${color}`;
@@ -188,25 +183,25 @@ export default class ExportManager {
      * @param {VisualComponent} component 
      * @returns {string} - format: `<vuid> <id> <type> <M(v)>`
      */
-    #serializeComponent(component) {
+    static serializeComponent(component) {
         const { uid, identifier, type, isRBSCenter } = component;
-        return `${uid} ${this.#serializeString(identifier)} ${type[0]} ${isRBSCenter ? 1 : 0}`;
+        return `${uid} ${RDLTFileExportManager.serializeString(identifier)} ${type[0]} ${isRBSCenter ? 1 : 0}`;
     }
 
     /**
      * @param {VisualArc} arc 
      * @returns {string} - format: `<auid> <from_vuid>-<to_vuid> <C> <L>`
      */
-    #serializeArc(arc) {
+    static serializeArc(arc) {
         const { uid, fromVertexUID, toVertexUID, C, L } = arc;
-        return `${uid} ${fromVertexUID}-${toVertexUID} ${this.#serializeString(C)} ${L}`;
+        return `${uid} ${fromVertexUID}-${toVertexUID} ${RDLTFileExportManager.serializeString(C)} ${L}`;
     }
 
     /**
      * @param {ComponentGeometry} geometry 
      * @returns {string} - format: `<vuid> <size> <x>,<y>`
      */
-    #serializeComponentGeometry(uid, geometry) {
+    static serializeComponentGeometry(uid, geometry) {
         const { size, position } = geometry;
         return `${uid} ${size} ${position.x},${position.y}`;
     }
@@ -215,7 +210,7 @@ export default class ExportManager {
      * @param {ArcGeometry} geometry 
      * @returns {string} - format: `<auid> <autoDraw> <labelSegmentIdx>/<labelFootFracDist>/<labelPerpDist> <x1>,<y1>  <x2>,<y2>  ...`
      */
-    #serializeArcGeometry(uid, geometry) {
+    static serializeArcGeometry(uid, geometry) {
         const { isAutoDraw, arcLabel: { baseSegmentIndex, footFracDistance, perpDistance }, waypoints } = geometry;
         const serializedWaypoints = waypoints.map(({ x, y }) => `${x},${y}`).join(" ");
 
@@ -228,7 +223,7 @@ export default class ExportManager {
      * @param {number} outlineID 
      * @returns {string} - format: `C=f<fid> L=f<fid> O=o1`
      */
-    #serializeVertexStyle(centerLabelFontID, labelFontID, outlineID) {
+    static serializeVertexStyle(centerLabelFontID, labelFontID, outlineID) {
         return `C=f${centerLabelFontID} L=f${labelFontID} O=o${outlineID}`;
     }
 
@@ -237,7 +232,7 @@ export default class ExportManager {
      * @param {number} outlineID 
      * @returns {string} - format: `L=f<fid> O=o1`
      */
-    #serializeArcStyle(labelFontID, outlineID) {
+    static serializeArcStyle(labelFontID, outlineID) {
         return `L=f${labelFontID} O=o${outlineID}`;
     }
 
@@ -245,7 +240,7 @@ export default class ExportManager {
      * @param {string} str 
      * @returns {string}
      */
-    #serializeString(str) {
+    static serializeString(str) {
         str = str.trim();
         if(str === "") return `""`;
 
@@ -256,20 +251,4 @@ export default class ExportManager {
 
         return str;
     }
-
-    #startDownload(filename, content) {
-        const blob = new Blob([content], { type: "text/plain" });
-        const url = URL.createObjectURL(blob);
-
-        const tmpParent = document.querySelector("#tmp");
-        const anchor = document.createElement("a");
-        anchor.href = url;
-        anchor.download = filename;
-        tmpParent.appendChild(anchor);
-        anchor.click();
-        
-        tmpParent.removeChild(anchor);
-        URL.revokeObjectURL(url);
-    }
-
 }

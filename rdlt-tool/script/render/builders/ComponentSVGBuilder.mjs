@@ -43,6 +43,7 @@ export default class ComponentSVGBuilder {
 
 
         this.#componentShapeElement = SVGAssetsRepository.loadComponentSVGElement(this.#type);
+        this.#componentShapeElement.classList.add("diagram");
         this.#componentElement = makeGroupSVG([
             this.#componentShapeElement,
             makeSVGElement("circle", {
@@ -66,6 +67,8 @@ export default class ComponentSVGBuilder {
                 y: this.boundHeight/2,
                 fontSize: 20
             });
+
+            this.#centerLabel.element.classList.add("diagram");
 
             const hoverElement = SVGAssetsRepository.loadComponentHoverSVGElement();
             hoverElement.classList.add("component-hover");

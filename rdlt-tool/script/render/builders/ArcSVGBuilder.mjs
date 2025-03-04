@@ -43,7 +43,7 @@ export default class ArcSVGBuilder {
         const arcElement = makeGroupSVG([
             this.#pathElement,
             this.#connectorEndElement
-        ]);
+        ], { className: "diagram" });
 
 
         if(!isTracing) {
@@ -53,6 +53,8 @@ export default class ArcSVGBuilder {
                 y: 0,
                 fontSize: 16
             });
+
+            this.#labelElement.element.classList.add("diagram");
     
             const arcCutoutID = `arc-${Date.now()}-${Math.floor(Math.random()*10000)}-cutout`
             this.#labelMaskElement = makeSVGElement("rect", {
@@ -60,7 +62,7 @@ export default class ArcSVGBuilder {
                 rx: 20, ry: 20
             });
     
-            const labelMaskBoundsElement = makeSVGElement("defs", {}, [
+            const labelMaskBoundsElement = makeSVGElement("defs", { className: "diagram" }, [
                 makeSVGElement("mask", { id: arcCutoutID }, [
                     makeSVGElement("rect", {
                         width: "100%", height: "100%", fill: "white"
